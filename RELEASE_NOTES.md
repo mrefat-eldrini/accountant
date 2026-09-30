@@ -26,6 +26,10 @@ The executive view answers:
 
 ### Testing
 - Application version updated to `0.5.0`.
+- Feature PR CI: **PASSED** — GitHub Actions run `36768069364`.
+- Develop CI: **PASSED** — GitHub Actions run `36768122573`.
+- Render staging deployment: **LIVE** — `dep-daumeojtqb8s73bulhlg`.
+- Authenticated smoke test against the actual staging URL: **PASSED**.
 - Smoke tests verify all executive analytics sections are rendered.
 - Existing accounting, role, administration, backup/restore, and audit tests remain in the release gate.
 
