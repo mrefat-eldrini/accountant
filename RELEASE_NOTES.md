@@ -36,6 +36,9 @@ The portable backup currently includes:
 
 Audit and system logs are intentionally preserved during restore so the restore event itself remains traceable.
 
+### Release Engineering
+- `develop` was synchronized to the current `main` release before v0.4.0 promotion to prevent branch-history drift.
+
 ### Verification Plan
 - Python syntax check.
 - Application startup.
