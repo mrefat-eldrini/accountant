@@ -34,6 +34,16 @@
 - Render staging deploy: **LIVE**.
 - Staging deploy ID: `dep-daulr9e7bikc73cteuag`.
 - Staging commit: `e318746386f323a93ee35d20de83392467823523`.
+- Release PR CI: **PASSED**.
+- Release GitHub Actions run: `36763458185`.
+- Main-branch CI after merge: **PASSED**.
+- Main GitHub Actions run: `36763519520`.
+- Production release commit: `bf672e920b993b4ad807362b85e4758cc47f5b97`.
+- Production Render deploy: `dep-daulsis1nsns73eq8b1g`.
+- Production deploy status: **LIVE**.
+- Production root request returned the expected HTTP 303 redirect to login.
+- Production login page returned HTTP 200 after deployment.
+- Render reported the production service live at `https://accountant-b7hw.onrender.com`.
 
 ### Release Policy
 A change is not promoted to `main` until:
