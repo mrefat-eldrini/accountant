@@ -30,6 +30,9 @@ The executive view answers:
 - Develop CI: **PASSED** — GitHub Actions run `36768122573`.
 - Render staging deployment: **LIVE** — `dep-daumeojtqb8s73bulhlg`.
 - Authenticated smoke test against the actual staging URL: **PASSED**.
+- Production release commit: `f511e9d22e472e6de8d295851b2c991e2175bbac`.
+- Render production deployment: **LIVE** — `dep-daumga0473hc73bqdvr0`.
+- Main-branch CI and authenticated smoke test against the actual production URL: **PASSED** — GitHub Actions run `36768506395`.
 - Smoke tests verify all executive analytics sections are rendered.
 - Existing accounting, role, administration, backup/restore, and audit tests remain in the release gate.
 
