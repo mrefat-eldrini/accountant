@@ -1,5 +1,44 @@
 # Release Notes
 
+## v0.3.1 — 2026-09-30
+
+### Added
+- Formal branch-based release process documentation.
+- GitHub Actions CI for pull requests and pushes to `develop` and `main`.
+- Automated application startup test.
+- Automated authenticated smoke-test suite covering:
+  - Health endpoint
+  - Login page
+  - Authentication
+  - Dashboard
+  - Transactions
+  - Invoices
+  - Expenses
+  - Customers
+  - Vendors
+  - Chart of Accounts
+  - Journal
+  - Reports
+  - User Management
+- Persistent repository release notes.
+
+### Verification
+- Feature-branch CI run: **PASSED**.
+- Workflow: `CI and Smoke Tests`.
+- GitHub Actions run: `36763051178`.
+- Syntax check: passed.
+- Application startup: passed.
+- Authenticated route smoke tests: passed.
+
+### Release Policy
+A change is not promoted to `main` until:
+1. Feature-branch CI passes.
+2. It is merged into `develop`.
+3. Render staging deploys successfully.
+4. Staging startup/log verification passes.
+5. Release PR to `main` passes CI.
+6. Production deployment is live and production routes are verified.
+
 ## v0.3.0 — 2026-09-30
 
 ### Added
