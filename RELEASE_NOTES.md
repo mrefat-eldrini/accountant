@@ -1,5 +1,64 @@
 # Release Notes
 
+## v0.4.0 — 2026-09-30
+
+### Added
+- Administration section available only to Admin users.
+- Audit Log with user, action, module, reference, details, timestamp, and IP address.
+- System Log and System Status page.
+- Full application backup download in portable JSON format.
+- Admin-only restore from validated Accountant Pro backup.
+- Company Settings for company name, currency, VAT rate, fiscal-year start, and backup retention days.
+- Audit events for login success/failure, logout, user management, password reset, accounting record creation, backup, restore, and settings changes.
+- Viewer role is now explicitly read-only for accounting write operations.
+- Dynamic application currency display from Company Settings.
+- Automated permission tests for Admin and Viewer.
+- Automated backup creation and restore test.
+
+### Security / Permissions
+- Backup, restore, system logs, audit logs, settings, and user management are restricted to Admin.
+- Accountant can perform accounting operations but cannot access Administration.
+- Viewer can view accounting screens but cannot create accounting records or access Administration.
+- Password values are never written to audit logs.
+- Restore requires an explicit confirmation and records a restore audit event.
+
+### Backup Scope
+The portable backup currently includes:
+- Users
+- Chart of Accounts
+- Customers
+- Vendors
+- Transactions
+- Invoices
+- Expenses
+- Journal Entries
+- Company Settings
+
+Audit and system logs are intentionally preserved during restore so the restore event itself remains traceable.
+
+### Release Engineering
+- `develop` was synchronized to the current `main` release before v0.4.0 promotion to prevent branch-history drift.
+
+### Verification Results
+- Initial behavioral CI detected a failing role-navigation assertion; the test was corrected because translation text caused a false positive.
+- Corrected feature CI: **PASSED** — GitHub Actions run `36766125265`.
+- Develop local CI after v0.4.0 promotion: **PASSED** — run `36766186886`.
+- Deployed-environment verification PR CI: **PASSED** — run `36766481730`.
+- Final develop CI including actual Render staging verification: **PASSED** — run `36766551199`.
+- Render staging deploy: **LIVE** — `dep-daum8dm7bikc73cunnlg`.
+- Staging commit: `1ff54e54e55a20ef6ee0d5db1fc0d17b18090d1c`.
+- Actual deployed staging smoke test verified:
+  - Health/version endpoint
+  - Admin navigation and all Administration pages
+  - Dashboard and all primary accounting routes
+  - Authenticated access to the deployed Render application
+
+### Production Gate
+Production promotion is allowed only after the release pull request passes CI. After merge, the main-branch workflow waits for Render production to report version 0.4.0 and then executes the authenticated remote smoke test against the real production URL.
+
+### Known Infrastructure Item
+- The application remains compatible with PostgreSQL via `DATABASE_URL`, but the Render web services are still using the local SQLite fallback until the managed PostgreSQL connection is attached.
+
 ## v0.3.1 — 2026-09-30
 
 ### Added
