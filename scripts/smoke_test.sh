@@ -37,7 +37,14 @@ base_tests() {
   grep -q "href='/backup'" "$page"
   grep -q "href='/system'" "$page"
   grep -q "href='/settings'" "$page"
-  echo "PASS base/admin UI"
+  grep -q "Executive Business Summary" "$page"
+  grep -q "Revenue vs Expenses" "$page"
+  grep -q "Net Profit Trend" "$page"
+  grep -q "Invoice Collection Status" "$page"
+  grep -q "Top Expense Categories" "$page"
+  grep -q "Top Customers by Invoice Value" "$page"
+  grep -q "Executive Insights" "$page"
+  echo "PASS base/admin UI and executive analytics"
 }
 
 backup_tests() {
@@ -60,7 +67,7 @@ remote_tests() {
   echo "[REMOTE] $BASE_URL"
   health="$(curl -fsS "$BASE_URL/health")"
   echo "$health" | grep -q '"status":"ok"'
-  echo "$health" | grep -q '"version":"0.4.0"'
+  echo "$health" | grep -q '"version":"0.5.0"'
 
   admin_login
   curl -fsS -b "$admin_cookies" "$BASE_URL/" -o "$page"
