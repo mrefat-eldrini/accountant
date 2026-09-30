@@ -3,7 +3,7 @@ set -euo pipefail
 
 PHASE="${1:-all}"
 BASE_URL="${BASE_URL:-http://127.0.0.1:8000}"
-EMAIL="${SMOKE_EMAIL:-admin@accountant.local}"
+USERNAME="${SMOKE_USERNAME:-admin}"
 PASSWORD="${SMOKE_PASSWORD:-Admin123!}"
 
 tmpdir="$(mktemp -d)"
@@ -14,7 +14,7 @@ page="$tmpdir/page.html"
 backup="$tmpdir/backup.json"
 
 admin_login() {
-  curl -fsS -c "$admin_cookies" -b "$admin_cookies"     -X POST "$BASE_URL/login"     -H 'Content-Type: application/x-www-form-urlencoded'     --data-urlencode "email=$EMAIL"     --data-urlencode "password=$PASSWORD"     -o /dev/null
+  curl -fsS -c "$admin_cookies" -b "$admin_cookies"     -X POST "$BASE_URL/login"     -H 'Content-Type: application/x-www-form-urlencoded'     --data-urlencode "username=$USERNAME"     --data-urlencode "password=$PASSWORD"     -o /dev/null
 }
 
 base_tests() {
@@ -26,7 +26,7 @@ base_tests() {
   test "$status" = "303" || test "$status" = "307"
   admin_login
 
-  for path in / /transactions /invoices /expenses /customers /vendors /accounts /journal /reports /users /audit /backup /system /settings; do
+  for path in / /transactions /invoices /expenses /customers /vendors /accounts /journal /reports /profile /users /audit /backup /system /settings; do
     code="$(curl -sS -o "$page" -w '%{http_code}' -b "$admin_cookies" "$BASE_URL$path")"
     test "$code" = "200" || { echo "FAILED $path -> HTTP $code"; cat "$page"; exit 1; }
   done
@@ -37,6 +37,11 @@ base_tests() {
   grep -q "href='/backup'" "$page"
   grep -q "href='/system'" "$page"
   grep -q "href='/settings'" "$page"
+  grep -q "href='/profile'" "$page"
+  curl -fsS -b "$admin_cookies" "$BASE_URL/profile" -o "$page"
+  grep -q "My Profile" "$page"
+  grep -q "System" "$page"
+  grep -q "Admin" "$page"
   grep -q "Executive Business Summary" "$page"
   grep -q "Revenue vs Expenses" "$page"
   grep -q "Net Profit Trend" "$page"
@@ -67,7 +72,7 @@ remote_tests() {
   echo "[REMOTE] $BASE_URL"
   health="$(curl -fsS "$BASE_URL/health")"
   echo "$health" | grep -q '"status":"ok"'
-  echo "$health" | grep -q '"version":"0.5.0"'
+  echo "$health" | grep -q '"version":"0.6.0"'
 
   admin_login
   curl -fsS -b "$admin_cookies" "$BASE_URL/" -o "$page"
@@ -87,10 +92,10 @@ remote_tests() {
 role_tests() {
   echo "[ROLES]"
   admin_login
-  viewer_email="viewer-smoke@accountant.local"
-  curl -sS -o /dev/null -b "$admin_cookies"     -X POST "$BASE_URL/users"     -H 'Content-Type: application/x-www-form-urlencoded'     --data-urlencode "name=Viewer Smoke"     --data-urlencode "email=$viewer_email"     --data-urlencode "password=Viewer123!"     --data-urlencode "role=Viewer"
+  viewer_username="viewer-smoke"
+  curl -sS -o /dev/null -b "$admin_cookies"     -X POST "$BASE_URL/users"     -H 'Content-Type: application/x-www-form-urlencoded'     --data-urlencode "username=$viewer_username"     --data-urlencode "first_name=Viewer"     --data-urlencode "last_name=Smoke"     --data-urlencode "password=Viewer123!"     --data-urlencode "role=Viewer"
 
-  curl -fsS -c "$viewer_cookies" -b "$viewer_cookies"     -X POST "$BASE_URL/login"     -H 'Content-Type: application/x-www-form-urlencoded'     --data-urlencode "email=$viewer_email"     --data-urlencode "password=Viewer123!"     -o /dev/null
+  curl -fsS -c "$viewer_cookies" -b "$viewer_cookies"     -X POST "$BASE_URL/login"     -H 'Content-Type: application/x-www-form-urlencoded'     --data-urlencode "username=$viewer_username"     --data-urlencode "password=Viewer123!"     -o /dev/null
 
   curl -fsS -b "$viewer_cookies" "$BASE_URL/" -o "$page"
   for admin_link in "/users" "/audit" "/backup" "/system" "/settings"; do
