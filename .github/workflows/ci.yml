@@ -1,0 +1,50 @@
+name: CI and Smoke Tests
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+
+jobs:
+  application-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Syntax check
+        run: python -m py_compile main.py
+
+      - name: Start application
+        run: |
+          uvicorn main:app --host 127.0.0.1 --port 8000 > /tmp/accountant.log 2>&1 &
+          echo $! > /tmp/accountant.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8000/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/accountant.log
+          exit 1
+
+      - name: Run smoke tests
+        env:
+          BASE_URL: http://127.0.0.1:8000
+        run: bash scripts/smoke_test.sh
+
+      - name: Print application log on failure
+        if: failure()
+        run: cat /tmp/accountant.log || true
