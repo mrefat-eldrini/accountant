@@ -32,11 +32,11 @@ base_tests() {
   done
 
   curl -fsS -b "$admin_cookies" "$BASE_URL/" -o "$page"
-  grep -q "Users" "$page"
-  grep -q "Audit Log" "$page"
-  grep -q "Backup & Restore" "$page"
-  grep -q "System Status" "$page"
-  grep -q "Settings" "$page"
+  grep -q "href='/users'" "$page"
+  grep -q "href='/audit'" "$page"
+  grep -q "href='/backup'" "$page"
+  grep -q "href='/system'" "$page"
+  grep -q "href='/settings'" "$page"
   echo "PASS base/admin UI"
 }
 
@@ -65,10 +65,12 @@ role_tests() {
   curl -fsS -c "$viewer_cookies" -b "$viewer_cookies"     -X POST "$BASE_URL/login"     -H 'Content-Type: application/x-www-form-urlencoded'     --data-urlencode "email=$viewer_email"     --data-urlencode "password=Viewer123!"     -o /dev/null
 
   curl -fsS -b "$viewer_cookies" "$BASE_URL/" -o "$page"
-  if grep -q "ADMINISTRATION" "$page"; then
-    echo "FAILED viewer can see Administration"
-    exit 1
-  fi
+  for admin_link in "/users" "/audit" "/backup" "/system" "/settings"; do
+    if grep -q "href='$admin_link'" "$page"; then
+      echo "FAILED viewer can see admin navigation link $admin_link"
+      exit 1
+    fi
+  done
 
   for path in /users /audit /backup /system /settings; do
     code="$(curl -sS -o /dev/null -w '%{http_code}' -b "$viewer_cookies" "$BASE_URL$path")"
