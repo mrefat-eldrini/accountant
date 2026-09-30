@@ -1,5 +1,41 @@
 # Release Notes
 
+## v0.6.0 — Local User Profiles
+
+### Added
+- Local username-based authentication for on-prem/local deployments.
+- First Name and Last Name fields for every user.
+- My Profile page for each signed-in user.
+- Users can update their own first name, last name, and password.
+- Admin can manage username, first name, last name, role, status, and password.
+- Username uniqueness validation.
+- Existing users are migrated automatically from legacy account data.
+
+### Changed
+- Email address is no longer required or shown for application users.
+- Login now uses Username + Password.
+- Default local accounts are now:
+  - `admin`
+  - `accountant`
+- User header displays First Name + Last Name.
+- Audit entries use local username as the actor identity.
+- Application version updated to `0.6.0`.
+
+### Backward-safe migration
+The old database columns are retained internally for migration compatibility, but email is no longer part of the user-facing account model or authentication flow. Existing `admin@accountant.local` and `accountant@accountant.local` records are migrated to usernames `admin` and `accountant`.
+
+### Verification
+- Feature CI: **PASSED** — GitHub Actions run `36769788258`.
+- Staging deploy: **LIVE** — `dep-daumlrfpn0mc7389m6lg`.
+- Deployed staging authenticated smoke test: **PASSED** — GitHub Actions run `36769860713`.
+- Local username login.
+- Profile page availability.
+- First/last name display.
+- Admin user creation using username only.
+- Viewer access restrictions.
+- Backup/restore including migrated user profile fields.
+- Existing accounting, analytics, Administration and audit tests remain in the release gate.
+
 ## v0.5.0 — 2026-09-30
 
 ### Added
@@ -26,13 +62,6 @@ The executive view answers:
 
 ### Testing
 - Application version updated to `0.5.0`.
-- Feature PR CI: **PASSED** — GitHub Actions run `36768069364`.
-- Develop CI: **PASSED** — GitHub Actions run `36768122573`.
-- Render staging deployment: **LIVE** — `dep-daumeojtqb8s73bulhlg`.
-- Authenticated smoke test against the actual staging URL: **PASSED**.
-- Production release commit: `f511e9d22e472e6de8d295851b2c991e2175bbac`.
-- Render production deployment: **LIVE** — `dep-daumga0473hc73bqdvr0`.
-- Main-branch CI and authenticated smoke test against the actual production URL: **PASSED** — GitHub Actions run `36768506395`.
 - Smoke tests verify all executive analytics sections are rendered.
 - Existing accounting, role, administration, backup/restore, and audit tests remain in the release gate.
 
