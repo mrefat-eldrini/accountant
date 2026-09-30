@@ -85,75 +85,130 @@ def user(request): return request.session.get("user")
 def guard(request):
     if not user(request): return RedirectResponse("/login",303)
 def nav(role):
-    links=[("Dashboard","/"),("Transactions","/transactions"),("Invoices","/invoices"),("Expenses","/expenses"),("Customers","/customers"),("Vendors","/vendors"),("Chart of Accounts","/accounts"),("Journal","/journal"),("Reports","/reports")]
-    if role=="Admin": links.append(("Users","/users"))
-    return "".join(f"<a href='{u}'>{n}</a>" for n,u in links)
+    links=[
+      ("⌂","Dashboard","/"),("↔","Transactions","/transactions"),("▤","Invoices","/invoices"),
+      ("◫","Expenses","/expenses"),("◎","Customers","/customers"),("◇","Vendors","/vendors"),
+      ("▦","Chart of Accounts","/accounts"),("⇄","Journal","/journal"),("▥","Reports","/reports")
+    ]
+    if role=="Admin": links.append(("♙","Users","/users"))
+    return "".join(f"<a href='{u}'><span class='nav-icon'>{i}</span><span>{n}</span></a>" for i,n,u in links)
 
 def page(request,title,body):
     u=user(request)
     role=u["role"] if u else ""
     return f"""<!doctype html><html lang='en' dir='ltr'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>{title} - Accountant Pro</title>
 <style>
-:root{{--bg:#f4f7fb;--ink:#14213d;--muted:#6b7280;--nav:#0d2742;--line:#dfe7ef;--brand:#1f6fb2;--good:#12805c;--bad:#c23b3b;--warn:#b7791f}}
-*{{box-sizing:border-box}}body{{margin:0;font-family:Inter,"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);text-align:start}}header{{background:var(--nav);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5;gap:16px}}header b{{font-size:20px;white-space:nowrap}}.head-actions{{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}}.lang-switch{{background:#fff;color:#0d2742;border:0;border-radius:999px;padding:8px 13px;font-weight:700;cursor:pointer;min-width:72px}}.layout{{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:calc(100vh - 58px)}}aside{{background:#fff;border-inline-end:1px solid var(--line);padding:18px}}aside a{{display:block;padding:10px 12px;margin:4px 0;border-radius:8px;color:#334155;text-decoration:none;text-align:start}}aside a:hover{{background:#eef5fb;color:var(--brand)}}main{{padding:26px;max-width:1400px;width:100%;margin:0 auto;min-width:0}}.top{{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}}.top h1{{margin:0}}.grid{{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}}.card{{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 3px 12px rgba(15,23,42,.04);overflow:auto}}.kpi{{font-size:26px;font-weight:750;margin-top:7px;direction:ltr;unicode-bidi:isolate;text-align:start}}.muted{{color:var(--muted);font-size:13px}}.good{{color:var(--good)}}.bad{{color:var(--bad)}}.warn{{color:var(--warn)}}table{{width:100%;border-collapse:collapse;background:#fff;min-width:680px}}th,td{{padding:11px 12px;border-bottom:1px solid var(--line);text-align:start;font-size:14px;vertical-align:middle}}th{{background:#eff4f8;white-space:nowrap}}form.gridform{{display:grid;grid-template-columns:repeat(6,minmax(130px,1fr));gap:10px;margin-bottom:16px}}input,select,textarea,button{{padding:10px 11px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;text-align:start}}input[type="email"],input[type="password"],input[type="number"],input[type="date"]{{direction:ltr}}button,.btn{{background:var(--brand);color:white;border:0;text-decoration:none;display:inline-block;padding:10px 14px;border-radius:8px;cursor:pointer;text-align:center}}.tag{{padding:4px 8px;border-radius:999px;background:#edf2f7;font-size:12px;white-space:nowrap}}.section{{margin-top:20px}}.login{{max-width:440px;margin:70px auto}}.login input{{width:100%;margin:8px 0}}.login button{{width:100%;margin-top:8px}}.ltr{{direction:ltr;unicode-bidi:isolate}}html[dir="rtl"] body{{font-family:Tahoma,"Segoe UI",Arial,sans-serif}}html[dir="rtl"] .head-actions{{justify-content:flex-start}}html[dir="rtl"] .layout{{grid-template-columns:240px minmax(0,1fr)}}html[dir="rtl"] input:not([type="email"]):not([type="password"]):not([type="number"]):not([type="date"]),html[dir="rtl"] select,html[dir="rtl"] textarea{{direction:rtl;text-align:right}}html[dir="rtl"] table,html[dir="rtl"] th,html[dir="rtl"] td{{text-align:right}}html[dir="rtl"] aside a{{text-align:right}}html[dir="rtl"] .kpi{{text-align:right}}html[dir="rtl"] .login{{text-align:right}}
-@media(max-width:1050px){{form.gridform{{grid-template-columns:repeat(3,minmax(140px,1fr))}}.grid{{grid-template-columns:repeat(2,minmax(0,1fr))}}}}
-@media(max-width:760px){{header{{padding:13px 14px}}.layout{{grid-template-columns:1fr}}aside{{display:none}}.grid{{grid-template-columns:1fr}}form.gridform{{grid-template-columns:1fr}}main{{padding:14px}}.card{{padding:14px}}.head-actions{{font-size:13px}}}}
+:root{{--bg:#090c11;--bg2:#0d1117;--panel:#10151d;--panel2:#131a24;--ink:#f4efe6;--text:#d7d9df;--muted:#8d96a5;--line:#242d3a;--line2:#313c4d;--gold:#f5a524;--gold2:#ffbd45;--goldsoft:rgba(245,165,36,.12);--good:#39d98a;--bad:#ff616d;--blue:#57a7ff;--warn:#ffc857}}
+*{{box-sizing:border-box}}
+html{{background:#090c11}}
+body{{margin:0;font-family:Inter,"Segoe UI",Tahoma,Arial,sans-serif;background:
+radial-gradient(circle at 82% 10%,rgba(245,165,36,.09),transparent 27%),
+linear-gradient(rgba(40,50,65,.24) 1px,transparent 1px),
+linear-gradient(90deg,rgba(40,50,65,.24) 1px,transparent 1px),
+var(--bg);background-size:auto,28px 28px,28px 28px,auto;color:var(--text);text-align:start;min-height:100vh}}
+body:before{{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(245,165,36,.035),transparent 28%,transparent 74%,rgba(245,165,36,.028));z-index:-1}}
+header{{height:76px;background:rgba(9,12,17,.92);backdrop-filter:blur(18px);border-bottom:1px solid #202833;padding:0 34px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20;gap:18px}}
+.brand{{display:flex;align-items:center;gap:12px;color:var(--ink);text-decoration:none;font-family:Georgia,"Times New Roman",serif;font-size:24px;font-weight:700;letter-spacing:.2px}}
+.brand-mark{{width:34px;height:34px;display:grid;place-items:center;border:1px solid rgba(245,165,36,.55);border-radius:9px;color:var(--gold);background:linear-gradient(145deg,rgba(245,165,36,.14),rgba(245,165,36,.02));box-shadow:0 0 24px rgba(245,165,36,.08)}}
+.brand em{{color:var(--gold);font-style:normal}}
+.head-actions{{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end;color:#cbd1db}}
+.user-pill{{display:flex;align-items:center;gap:9px;padding:8px 11px;border-left:1px solid var(--line)}}
+.avatar{{width:31px;height:31px;border:1px solid var(--line2);border-radius:50%;display:grid;place-items:center;color:var(--gold);background:#111821}}
+.lang-switch{{background:#0d1219;color:#e9edf4;border:1px solid #384354;border-radius:9px;padding:9px 14px;font-weight:700;cursor:pointer;min-width:82px;transition:.2s}}
+.lang-switch:hover{{border-color:var(--gold);color:var(--gold)}}
+.logout-link{{color:#cfd6e2;text-decoration:none;padding:8px 2px}}.logout-link:hover{{color:var(--gold)}}
+.layout{{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:calc(100vh - 76px)}}
+aside{{background:rgba(10,14,20,.82);border-inline-end:1px solid #202936;padding:24px 14px;position:sticky;top:76px;height:calc(100vh - 76px);overflow:auto}}
+aside:before{{content:"WORKSPACE";display:block;color:#667184;font-size:10px;letter-spacing:2px;padding:0 12px 13px}}
+aside a{{display:flex;align-items:center;gap:11px;padding:11px 12px;margin:4px 0;border-radius:9px;color:#aeb6c4;text-decoration:none;text-align:start;border:1px solid transparent;transition:.18s}}
+aside a:hover{{background:rgba(245,165,36,.07);border-color:rgba(245,165,36,.2);color:#fff}}
+.nav-icon{{width:25px;height:25px;display:grid;place-items:center;border-radius:7px;color:var(--gold);background:rgba(245,165,36,.07);font-size:15px}}
+main{{padding:32px;max-width:1540px;width:100%;margin:0 auto;min-width:0}}
+.top{{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:22px;border-bottom:1px solid rgba(255,255,255,.035);padding-bottom:18px}}
+.top h1{{margin:0;color:var(--ink);font-family:Georgia,"Times New Roman",serif;font-size:34px;line-height:1.08;font-weight:650}}
+.top h1:after{{content:"";display:block;width:44px;height:2px;margin-top:12px;background:var(--gold);box-shadow:0 0 15px rgba(245,165,36,.3)}}
+.grid{{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}}
+.card{{position:relative;background:linear-gradient(145deg,rgba(19,26,36,.97),rgba(12,17,24,.98));border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:0 14px 32px rgba(0,0,0,.16);overflow:auto}}
+.card:before{{content:"";position:absolute;inset:0 0 auto 0;height:1px;background:linear-gradient(90deg,transparent,rgba(245,165,36,.26),transparent);pointer-events:none}}
+.card h2,.card h3{{color:#f2eee7}}
+.kpi{{font-size:27px;font-weight:760;margin-top:9px;direction:ltr;unicode-bidi:isolate;text-align:start;color:#f6f7f9;letter-spacing:-.6px}}
+.kpi.good,.good{{color:var(--good)}}.bad{{color:var(--bad)}}.warn{{color:var(--warn)}}.muted{{color:var(--muted);font-size:12px;letter-spacing:.2px}}
+.section{{margin-top:18px}}
+table{{width:100%;border-collapse:separate;border-spacing:0;background:transparent;min-width:720px}}
+th,td{{padding:12px 13px;border-bottom:1px solid #222b38;text-align:start;font-size:13px;vertical-align:middle}}
+th{{background:#0f151e;color:#98a4b5;white-space:nowrap;font-size:11px;text-transform:uppercase;letter-spacing:.6px}}
+tr:hover td{{background:rgba(245,165,36,.025)}}
+td{{color:#d5dae3}}
+form.gridform{{display:grid;grid-template-columns:repeat(6,minmax(130px,1fr));gap:10px;margin-bottom:18px;padding:15px;background:#0c1118;border:1px solid #202a37;border-radius:10px}}
+input,select,textarea,button{{padding:11px 12px;border:1px solid #2a3443;border-radius:8px;font:inherit;text-align:start}}
+input,select,textarea{{background:#0b1016;color:#e7ebf1;outline:none}}
+input::placeholder,textarea::placeholder{{color:#687486}}
+input:focus,select:focus,textarea:focus{{border-color:rgba(245,165,36,.7);box-shadow:0 0 0 3px rgba(245,165,36,.08)}}
+select option{{background:#0d1219;color:#fff}}
+input[type="email"],input[type="password"],input[type="number"],input[type="date"]{{direction:ltr}}
+button,.btn{{background:linear-gradient(180deg,var(--gold2),var(--gold));color:#15100a;border:1px solid #ffbf4b;text-decoration:none;display:inline-block;padding:10px 15px;border-radius:8px;cursor:pointer;text-align:center;font-weight:800;box-shadow:0 8px 24px rgba(245,165,36,.1);transition:.18s}}
+button:hover,.btn:hover{{transform:translateY(-1px);filter:brightness(1.04)}}
+.tag{{padding:5px 9px;border-radius:999px;background:#18222d;border:1px solid #2b3848;font-size:11px;white-space:nowrap;color:#d6dde8}}
+.login{{max-width:470px;margin:65px auto;background:linear-gradient(145deg,#121923,#0c1118);border:1px solid #303a48;box-shadow:0 32px 80px rgba(0,0,0,.4);padding:28px}}
+.login:after{{content:"SECURE ACCOUNTING WORKSPACE";display:block;margin-top:22px;color:#6e7988;font-size:10px;letter-spacing:1.8px;text-align:center}}
+.login input{{width:100%;margin:7px 0}}.login button{{width:100%;margin-top:10px}}
+.login hr{{border:0;border-top:1px solid #26303d;margin:22px 0}}
+.ltr{{direction:ltr;unicode-bidi:isolate}}
+.hero-strip{{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:16px;margin-bottom:18px}}
+.hero-copy{{min-height:205px;padding:26px;display:flex;flex-direction:column;justify-content:center}}
+.eyebrow{{color:var(--gold);font-size:11px;letter-spacing:2.2px;font-weight:800;text-transform:uppercase;margin-bottom:13px}}
+.hero-title{{font-family:Georgia,"Times New Roman",serif;font-size:38px;line-height:1.05;color:#f4efe7;margin:0 0 9px}}
+.hero-title em{{display:block;color:var(--gold);font-style:italic}}
+.hero-sub{{max-width:700px;color:#9aa5b5;line-height:1.7;margin:0}}
+.hero-panel{{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:center;padding:18px}}
+.hero-stat{{padding:15px;border-radius:9px;border:1px solid #273140;background:#0b1118}}
+.hero-stat b{{display:block;color:#f3f5f8;font-size:19px;margin-top:6px;direction:ltr}}
+html[dir="rtl"] body{{font-family:Tahoma,"Segoe UI",Arial,sans-serif}}
+html[dir="rtl"] .head-actions{{justify-content:flex-start}}
+html[dir="rtl"] input:not([type="email"]):not([type="password"]):not([type="number"]):not([type="date"]),html[dir="rtl"] select,html[dir="rtl"] textarea{{direction:rtl;text-align:right}}
+html[dir="rtl"] table,html[dir="rtl"] th,html[dir="rtl"] td,html[dir="rtl"] aside a{{text-align:right}}
+html[dir="rtl"] .kpi{{text-align:right}}
+html[dir="rtl"] .login{{text-align:right}}
+html[dir="rtl"] .user-pill{{border-left:0;border-right:1px solid var(--line)}}
+@media(max-width:1120px){{form.gridform{{grid-template-columns:repeat(3,minmax(140px,1fr))}}.grid{{grid-template-columns:repeat(2,minmax(0,1fr))}}.hero-strip{{grid-template-columns:1fr}}}}
+@media(max-width:780px){{header{{height:auto;min-height:68px;padding:12px 14px}}.brand{{font-size:20px}}.layout{{grid-template-columns:1fr}}aside{{display:none}}.grid{{grid-template-columns:1fr}}form.gridform{{grid-template-columns:1fr}}main{{padding:15px}}.card{{padding:14px}}.head-actions{{font-size:12px}}.user-pill span{{display:none}}.top h1{{font-size:28px}}.hero-title{{font-size:31px}}.hero-copy{{padding:20px}}.hero-panel{{grid-template-columns:1fr 1fr}}}}
 </style></head><body>
-<header><b data-i18n='app_name'>Accountant Pro</b><div class='head-actions'><button class='lang-switch' type='button' onclick='toggleLanguage()'>العربية</button><span>{u['name'] if u else ''} {f"· {role}" if u else ''}</span>{f"<a data-i18n='logout' style='color:#fff' href='/logout'>Logout</a>" if u else ''}</div></header>
+<header><a class='brand' href='/'><span class='brand-mark'>A</span><span>Accountant <em>Pro</em></span></a><div class='head-actions'><button class='lang-switch' type='button' onclick='toggleLanguage()'>العربية</button>{f"<div class='user-pill'><span class='avatar'>◌</span><span>{u['name']} · {role}</span></div><a class='logout-link' href='/logout'>Logout</a>" if u else ''}</div></header>
 {f"<div class='layout'><aside>{nav(role)}</aside><main><div class='top'><h1>{title}</h1></div>{body}</main></div>" if u else f"<main>{body}</main>"}
 <script>
 const AR = {{
 "Accountant Pro":"المحاسب برو","Dashboard":"لوحة التحكم","Transactions":"المعاملات","Invoices":"الفواتير","Expenses":"المصروفات","Customers":"العملاء","Vendors":"الموردون","Chart of Accounts":"دليل الحسابات","Journal":"القيود اليومية","Journal Entries":"القيود اليومية","Reports":"التقارير","Users":"المستخدمون","Users & Roles":"المستخدمون والصلاحيات","Logout":"تسجيل الخروج",
 "Login":"تسجيل الدخول","Sign in":"تسجيل الدخول","Use one of the demo accounts below.":"استخدم أحد الحسابات التجريبية أدناه.","Email":"البريد الإلكتروني","Password":"كلمة المرور","Admin:":"المدير:","Accountant:":"المحاسب:",
 "Revenue":"الإيرادات","Expenses":"المصروفات","Net profit":"صافي الربح","VAT tracked":"ضريبة القيمة المضافة","Accounts receivable":"الذمم المدينة","Accounts payable":"الذمم الدائنة","Overdue invoices":"الفواتير المتأخرة","Database":"قاعدة البيانات","SQLite Demo":"SQLite تجريبي","Recent activity":"النشاط الأخير",
+"Financial clarity for every decision.":"وضوح مالي لكل قرار.","A premium view of your accounting health, cash position, receivables and obligations.":"رؤية احترافية لصحتك المالية والسيولة والذمم والالتزامات.","Financial Intelligence · Accounting · VAT":"الذكاء المالي · المحاسبة · ضريبة القيمة المضافة",
 "Date":"التاريخ","Description":"الوصف","Category":"الفئة","Type":"النوع","Amount":"المبلغ","Reference":"المرجع","Ref":"المرجع","Account code":"رمز الحساب","VAT":"ضريبة القيمة المضافة","Income":"إيراد","Expense":"مصروف","income":"إيراد","expense":"مصروف","Add transaction":"إضافة معاملة",
 "Name":"الاسم","Customer name":"اسم العميل","Vendor name":"اسم المورد","Phone":"الهاتف","TRN / Tax no.":"الرقم الضريبي","Tax no.":"الرقم الضريبي","Address":"العنوان","Balance":"الرصيد","Add customer":"إضافة عميل","Add vendor":"إضافة مورد",
 "Invoice no.":"رقم الفاتورة","Invoice":"الفاتورة","Customer":"العميل","Issue":"الإصدار","Due":"الاستحقاق","Status":"الحالة","Subtotal":"المجموع قبل الضريبة","Total":"الإجمالي","Paid":"مدفوع","Unpaid":"غير مدفوع","Partially Paid":"مدفوع جزئياً","Notes":"ملاحظات","Create invoice":"إنشاء فاتورة",
-"Vendor":"المورد","Payment method":"طريقة الدفع","Bank Transfer":"تحويل بنكي","Card":"بطاقة","Cash":"نقداً","Add expense":"إضافة مصروف",
-"Code":"الرمز","Account":"الحساب","Account name":"اسم الحساب","Asset":"أصل","Liability":"التزام","Equity":"حقوق الملكية","Revenue":"الإيرادات","Expense":"مصروف","Add account":"إضافة حساب",
+"Vendor":"المورد","Bank Transfer":"تحويل بنكي","Card":"بطاقة","Cash":"نقداً","Add expense":"إضافة مصروف",
+"Code":"الرمز","Account":"الحساب","Account name":"اسم الحساب","Asset":"أصل","Liability":"التزام","Equity":"حقوق الملكية","Add account":"إضافة حساب",
 "Debit":"مدين","Credit":"دائن","Debit account":"الحساب المدين","Credit account":"الحساب الدائن","Post entry":"ترحيل القيد","Posted":"مرحل",
-"Profit & Loss":"الأرباح والخسائر","Balance Sheet Snapshot":"ملخص الميزانية العمومية","Assets":"الأصول","Liabilities":"الالتزامات","Equity":"حقوق الملكية","VAT Summary":"ملخص ضريبة القيمة المضافة","Output VAT":"ضريبة المخرجات","Input VAT":"ضريبة المدخلات","Net VAT":"صافي الضريبة","Exports":"التصدير","Transactions CSV":"تصدير المعاملات CSV","Invoices CSV":"تصدير الفواتير CSV",
+"Profit & Loss":"الأرباح والخسائر","Balance Sheet Snapshot":"ملخص الميزانية العمومية","Assets":"الأصول","Liabilities":"الالتزامات","VAT Summary":"ملخص ضريبة القيمة المضافة","Output VAT":"ضريبة المخرجات","Input VAT":"ضريبة المدخلات","Net VAT":"صافي الضريبة","Exports":"التصدير","Transactions CSV":"تصدير المعاملات CSV","Invoices CSV":"تصدير الفواتير CSV",
 "Full name":"الاسم الكامل","Role":"الدور","Admin":"مدير","Accountant":"محاسب","Viewer":"مشاهد","Active":"نشط","Add user":"إضافة مستخدم",
 "Consulting revenue":"إيراد الاستشارات","Sales":"المبيعات","Office rent":"إيجار المكتب","Operations":"العمليات","Software subscriptions":"اشتراكات البرامج","IT":"تقنية المعلومات","Support contract":"عقد الدعم","Services":"الخدمات","Office":"المكتب","Monthly office supplies":"مستلزمات المكتب الشهرية","Initial capital":"رأس المال الافتتاحي","Paid in full":"مدفوع بالكامل","System Admin":"مدير النظام","Accountant User":"مستخدم محاسب",
 "Cash":"النقد","Accounts Receivable":"الذمم المدينة","Accounts Payable":"الذمم الدائنة","Owner Equity":"حقوق المالك","Sales Revenue":"إيرادات المبيعات","Operating Expenses":"المصروفات التشغيلية"
 }};
 function translateText(s,lang) {{
-  const trimmed=s.trim();
-  if(!trimmed) return s;
+  const trimmed=s.trim(); if(!trimmed) return s;
   if(lang==='ar' && AR[trimmed]) return s.replace(trimmed,AR[trimmed]);
-  if(lang==='en') {{
-    const pair=Object.entries(AR).find(([en,ar])=>ar===trimmed);
-    if(pair) return s.replace(trimmed,pair[0]);
-  }}
+  if(lang==='en') {{const pair=Object.entries(AR).find(([en,ar])=>ar===trimmed); if(pair) return s.replace(trimmed,pair[0]);}}
   return s;
 }}
 function applyLanguage(lang) {{
-  document.documentElement.lang=lang;
-  document.documentElement.dir=lang==='ar'?'rtl':'ltr';
-  localStorage.setItem('accountant_lang',lang);
-  document.querySelectorAll('body *').forEach(el=>{{
-    if(['SCRIPT','STYLE','INPUT','TEXTAREA'].includes(el.tagName)) return;
-    [...el.childNodes].forEach(n=>{{if(n.nodeType===3)n.nodeValue=translateText(n.nodeValue,lang);}});
-  }});
-  document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{{
-    const p=el.getAttribute('placeholder');
-    if(lang==='ar' && AR[p]) el.setAttribute('placeholder',AR[p]);
-    else if(lang==='en') {{
-      const pair=Object.entries(AR).find(([en,ar])=>ar===p);
-      if(pair) el.setAttribute('placeholder',pair[0]);
-    }}
-  }});
+  document.documentElement.lang=lang; document.documentElement.dir=lang==='ar'?'rtl':'ltr'; localStorage.setItem('accountant_lang',lang);
+  document.querySelectorAll('body *').forEach(el=>{{if(['SCRIPT','STYLE','INPUT','TEXTAREA'].includes(el.tagName)) return; [...el.childNodes].forEach(n=>{{if(n.nodeType===3)n.nodeValue=translateText(n.nodeValue,lang);}});}});
+  document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{{const p=el.getAttribute('placeholder'); if(lang==='ar' && AR[p]) el.setAttribute('placeholder',AR[p]); else if(lang==='en'){{const pair=Object.entries(AR).find(([en,ar])=>ar===p);if(pair)el.setAttribute('placeholder',pair[0]);}}}});
   document.querySelectorAll('option').forEach(el=>{{el.textContent=translateText(el.textContent,lang);}});
   document.querySelector('.lang-switch').textContent=lang==='ar'?'English':'العربية';
   document.title=(lang==='ar'?(AR['{title}']||'{title}'):'{title}')+' - '+(lang==='ar'?'المحاسب برو':'Accountant Pro');
 }}
-function toggleLanguage() {{
-  const current=localStorage.getItem('accountant_lang')||'en';
-  applyLanguage(current==='ar'?'en':'ar');
-}}
+function toggleLanguage() {{const current=localStorage.getItem('accountant_lang')||'en';applyLanguage(current==='ar'?'en':'ar');}}
 applyLanguage(localStorage.getItem('accountant_lang')||'en');
-</script>
-</body></html>"""
+</script></body></html>"""
 
 @app.get("/login",response_class=HTMLResponse)
 def login_get(request:Request):
@@ -187,12 +242,21 @@ def dashboard(request:Request):
     recent=q("SELECT * FROM transactions ORDER BY id DESC LIMIT 6")
     rows="".join(f"<tr><td>{r['txn_date']}</td><td>{r['description']}</td><td>{r['category']}</td><td>{r['txn_type']}</td><td>{money(r['amount'])}</td></tr>" for r in recent)
     profit=Decimal(str(s["income"]))-Decimal(str(s["expense"]))
-    body=f"""<div class='grid'>
-    <div class='card'><div class='muted'>Revenue</div><div class='kpi good'>{money(s['income'])}</div></div>
-    <div class='card'><div class='muted'>Expenses</div><div class='kpi bad'>{money(s['expense'])}</div></div>
-    <div class='card'><div class='muted'>Net profit</div><div class='kpi'>{money(profit)}</div></div>
-    <div class='card'><div class='muted'>VAT tracked</div><div class='kpi'>{money(s['tax'])}</div></div></div>
-    <div class='grid section'><div class='card'><div class='muted'>Accounts receivable</div><div class='kpi'>{money(ar)}</div></div><div class='card'><div class='muted'>Accounts payable</div><div class='kpi'>{money(ap)}</div></div><div class='card'><div class='muted'>Overdue invoices</div><div class='kpi warn'>{overdue}</div></div><div class='card'><div class='muted'>Database</div><div class='kpi'>{'PostgreSQL' if is_pg() else 'SQLite Demo'}</div></div></div>
+    body=f"""<div class='hero-strip'>
+      <div class='card hero-copy'><div class='eyebrow'>Financial Intelligence · Accounting · VAT</div><h2 class='hero-title'>Financial clarity for every decision.</h2><p class='hero-sub'>A premium view of your accounting health, cash position, receivables and obligations.</p></div>
+      <div class='card hero-panel'>
+        <div class='hero-stat'><span class='muted'>Revenue</span><b>{money(s['income'])}</b></div>
+        <div class='hero-stat'><span class='muted'>Net profit</span><b>{money(profit)}</b></div>
+        <div class='hero-stat'><span class='muted'>Accounts receivable</span><b>{money(ar)}</b></div>
+        <div class='hero-stat'><span class='muted'>VAT tracked</span><b>{money(s['tax'])}</b></div>
+      </div>
+    </div>
+    <div class='grid'>
+      <div class='card'><div class='muted'>Revenue</div><div class='kpi good'>{money(s['income'])}</div></div>
+      <div class='card'><div class='muted'>Expenses</div><div class='kpi bad'>{money(s['expense'])}</div></div>
+      <div class='card'><div class='muted'>Accounts payable</div><div class='kpi'>{money(ap)}</div></div>
+      <div class='card'><div class='muted'>Overdue invoices</div><div class='kpi warn'>{overdue}</div></div>
+    </div>
     <div class='card section'><h3>Recent activity</h3><table><tr><th>Date</th><th>Description</th><th>Category</th><th>Type</th><th>Amount</th></tr>{rows}</table></div>"""
     return page(request,"Dashboard",body)
 
