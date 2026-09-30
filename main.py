@@ -24,7 +24,7 @@ def q(sql,p=None,one=False):
             return (data[0] if data else None) if one else data
 def execq(sql,p=None):
     with engine.begin() as c: c.execute(text(sql),p or {})
-def money(v): return f"AED {Decimal(str(v or 0)):,.2f}"
+def money(v): return f"{setting('currency','AED')} {Decimal(str(v or 0)):,.2f}"
 def hash_pw(pw,salt=None):
     salt=salt or secrets.token_hex(16)
     dk=hashlib.pbkdf2_hmac("sha256",pw.encode(),salt.encode(),150000)
@@ -116,6 +116,10 @@ def admin_guard(request):
     g=guard(request)
     if g:return g
     if user(request)["role"]!="Admin": return RedirectResponse("/",303)
+def editor_guard(request):
+    g=guard(request)
+    if g:return g
+    if user(request)["role"] not in ("Admin","Accountant"): return RedirectResponse("/",303)
 def nav(role):
     links=[
       ("⌂","Dashboard","/"),("↔","Transactions","/transactions"),("▤","Invoices","/invoices"),
@@ -366,8 +370,10 @@ def transactions(request:Request):
 
 @app.post("/transactions")
 def add_transaction(request:Request,txn_date:str=Form(...),reference:str=Form(""),description:str=Form(...),category:str=Form(...),txn_type:str=Form(...),account_code:str=Form(""),amount:Decimal=Form(...),tax:Decimal=Form(0)):
-    if not user(request):return RedirectResponse("/login",303)
+    g=editor_guard(request)
+    if g:return g
     execq("INSERT INTO transactions(txn_date,description,category,txn_type,amount,tax,reference,account_code) VALUES(:d,:x,:c,:t,:a,:v,:r,:ac)",{"d":txn_date,"x":description,"c":category,"t":txn_type,"a":amount,"v":tax,"r":reference,"ac":account_code})
+    audit(request,"CREATE_TRANSACTION","Accounting",reference or description,f"Type={txn_type}; Amount={amount}; Tax={tax}")
     return RedirectResponse("/transactions",303)
 
 @app.get("/customers",response_class=HTMLResponse)
@@ -381,8 +387,10 @@ def customers(request:Request):
 
 @app.post("/customers")
 def add_customer(request:Request,name:str=Form(...),email:str=Form(""),phone:str=Form(""),tax_number:str=Form(""),address:str=Form("")):
-    if not user(request):return RedirectResponse("/login",303)
+    g=editor_guard(request)
+    if g:return g
     execq("INSERT INTO customers(name,email,phone,tax_number,address,balance) VALUES(:n,:e,:p,:t,:a,0)",{"n":name,"e":email,"p":phone,"t":tax_number,"a":address})
+    audit(request,"CREATE_CUSTOMER","Accounting",name,f"Email={email}")
     return RedirectResponse("/customers",303)
 
 @app.get("/vendors",response_class=HTMLResponse)
@@ -396,8 +404,10 @@ def vendors(request:Request):
 
 @app.post("/vendors")
 def add_vendor(request:Request,name:str=Form(...),email:str=Form(""),phone:str=Form(""),tax_number:str=Form(""),address:str=Form("")):
-    if not user(request):return RedirectResponse("/login",303)
+    g=editor_guard(request)
+    if g:return g
     execq("INSERT INTO vendors(name,email,phone,tax_number,address,balance) VALUES(:n,:e,:p,:t,:a,0)",{"n":name,"e":email,"p":phone,"t":tax_number,"a":address})
+    audit(request,"CREATE_VENDOR","Accounting",name,f"Email={email}")
     return RedirectResponse("/vendors",303)
 
 @app.get("/invoices",response_class=HTMLResponse)
@@ -411,10 +421,12 @@ def invoices(request:Request):
 
 @app.post("/invoices")
 def add_invoice(request:Request,invoice_no:str=Form(...),customer_name:str=Form(...),issue_date:str=Form(...),due_date:str=Form(...),subtotal:Decimal=Form(...),tax:Decimal=Form(0),paid:Decimal=Form(0),notes:str=Form("")):
-    if not user(request):return RedirectResponse("/login",303)
+    g=editor_guard(request)
+    if g:return g
     total=subtotal+tax
     status="Paid" if paid>=total else ("Partially Paid" if paid>0 else "Unpaid")
     execq("INSERT INTO invoices(invoice_no,customer_name,issue_date,due_date,status,subtotal,tax,total,paid,notes) VALUES(:i,:c,:is,:d,:s,:sub,:tax,:tot,:p,:n)",{"i":invoice_no,"c":customer_name,"is":issue_date,"d":due_date,"s":status,"sub":subtotal,"tax":tax,"tot":total,"p":paid,"n":notes})
+    audit(request,"CREATE_INVOICE","Accounting",invoice_no,f"Customer={customer_name}; Total={total}; Status={status}")
     return RedirectResponse("/invoices",303)
 
 @app.get("/expenses",response_class=HTMLResponse)
@@ -428,8 +440,11 @@ def expenses(request:Request):
 
 @app.post("/expenses")
 def add_expense(request:Request,expense_date:str=Form(...),vendor:str=Form(""),category:str=Form(...),description:str=Form(...),subtotal:Decimal=Form(...),tax:Decimal=Form(0),payment_method:str=Form(...),status:str=Form(...)):
-    if not user(request):return RedirectResponse("/login",303)
-    execq("INSERT INTO expenses(expense_date,vendor,category,description,subtotal,tax,total,payment_method,status) VALUES(:d,:v,:c,:x,:s,:t,:tot,:pm,:st)",{"d":expense_date,"v":vendor,"c":category,"x":description,"s":subtotal,"t":tax,"tot":subtotal+tax,"pm":payment_method,"st":status})
+    g=editor_guard(request)
+    if g:return g
+    total=subtotal+tax
+    execq("INSERT INTO expenses(expense_date,vendor,category,description,subtotal,tax,total,payment_method,status) VALUES(:d,:v,:c,:x,:s,:t,:tot,:pm,:st)",{"d":expense_date,"v":vendor,"c":category,"x":description,"s":subtotal,"t":tax,"tot":total,"pm":payment_method,"st":status})
+    audit(request,"CREATE_EXPENSE","Accounting",description,f"Vendor={vendor}; Total={total}; Status={status}")
     return RedirectResponse("/expenses",303)
 
 @app.get("/accounts",response_class=HTMLResponse)
@@ -443,8 +458,10 @@ def accounts(request:Request):
 
 @app.post("/accounts")
 def add_account(request:Request,code:str=Form(...),name:str=Form(...),account_type:str=Form(...),balance:Decimal=Form(0)):
-    if not user(request):return RedirectResponse("/login",303)
+    g=editor_guard(request)
+    if g:return g
     execq("INSERT INTO accounts(code,name,account_type,balance) VALUES(:c,:n,:t,:b)",{"c":code,"n":name,"t":account_type,"b":balance})
+    audit(request,"CREATE_ACCOUNT","Accounting",code,f"Name={name}; Type={account_type}; OpeningBalance={balance}")
     return RedirectResponse("/accounts",303)
 
 @app.get("/journal",response_class=HTMLResponse)
@@ -458,8 +475,10 @@ def journal(request:Request):
 
 @app.post("/journal")
 def add_journal(request:Request,entry_date:str=Form(...),reference:str=Form(""),description:str=Form(...),debit_account:str=Form(...),credit_account:str=Form(...),amount:Decimal=Form(...)):
-    if not user(request):return RedirectResponse("/login",303)
+    g=editor_guard(request)
+    if g:return g
     execq("INSERT INTO journal_entries(entry_date,reference,description,debit_account,credit_account,amount,status) VALUES(:d,:r,:x,:db,:cr,:a,'Posted')",{"d":entry_date,"r":reference,"x":description,"db":debit_account,"cr":credit_account,"a":amount})
+    audit(request,"POST_JOURNAL_ENTRY","Accounting",reference or description,f"Debit={debit_account}; Credit={credit_account}; Amount={amount}")
     return RedirectResponse("/journal",303)
 
 @app.get("/reports",response_class=HTMLResponse)
