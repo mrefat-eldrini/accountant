@@ -59,12 +59,12 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         run: |
           for i in {1..60}; do
-            if curl -fsS https://accountant-staging.onrender.com/health | grep -q '"version":"0.5.0"'; then
+            if curl -fsS https://accountant-staging.onrender.com/health | grep -q '"version":"0.6.0"'; then
               exit 0
             fi
             sleep 5
           done
-          echo "Staging did not deploy version 0.5.0 in time"
+          echo "Staging did not deploy version 0.6.0 in time"
           exit 1
 
       - name: Smoke - deployed staging
@@ -77,12 +77,12 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           for i in {1..60}; do
-            if curl -fsS https://accountant-b7hw.onrender.com/health | grep -q '"version":"0.5.0"'; then
+            if curl -fsS https://accountant-b7hw.onrender.com/health | grep -q '"version":"0.6.0"'; then
               exit 0
             fi
             sleep 5
           done
-          echo "Production did not deploy version 0.5.0 in time"
+          echo "Production did not deploy version 0.6.0 in time"
           exit 1
 
       - name: Smoke - deployed production
