@@ -26,9 +26,14 @@
 - Feature-branch CI run: **PASSED**.
 - Workflow: `CI and Smoke Tests`.
 - GitHub Actions run: `36763051178`.
+- Develop-branch CI run: **PASSED**.
+- Develop GitHub Actions run: `36763252335`.
 - Syntax check: passed.
 - Application startup: passed.
 - Authenticated route smoke tests: passed.
+- Render staging deploy: **LIVE**.
+- Staging deploy ID: `dep-daulr9e7bikc73cteuag`.
+- Staging commit: `e318746386f323a93ee35d20de83392467823523`.
 
 ### Release Policy
 A change is not promoted to `main` until:
