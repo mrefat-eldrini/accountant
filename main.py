@@ -114,8 +114,8 @@ header{{height:76px;background:rgba(9,12,17,.92);backdrop-filter:blur(18px);bord
 .head-actions{{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end;color:#cbd1db}}
 .user-pill{{display:flex;align-items:center;gap:9px;padding:8px 11px;border-left:1px solid var(--line)}}
 .avatar{{width:31px;height:31px;border:1px solid var(--line2);border-radius:50%;display:grid;place-items:center;color:var(--gold);background:#111821}}
-.lang-switch{{background:#0d1219;color:#e9edf4;border:1px solid #384354;border-radius:9px;padding:9px 14px;font-weight:700;cursor:pointer;min-width:82px;transition:.2s}}
-.lang-switch:hover{{border-color:var(--gold);color:var(--gold)}}
+.lang-switch,.theme-switch{{background:#0d1219;color:#e9edf4;border:1px solid #384354;border-radius:9px;padding:9px 14px;font-weight:700;cursor:pointer;min-width:82px;transition:.2s}}
+.lang-switch:hover,.theme-switch:hover{{border-color:var(--gold);color:var(--gold)}}
 .logout-link{{color:#cfd6e2;text-decoration:none;padding:8px 2px}}.logout-link:hover{{color:var(--gold)}}
 .layout{{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:calc(100vh - 76px)}}
 aside{{background:rgba(10,14,20,.82);border-inline-end:1px solid #202936;padding:24px 14px;position:sticky;top:76px;height:calc(100vh - 76px);overflow:auto}}
@@ -170,10 +170,49 @@ html[dir="rtl"] table,html[dir="rtl"] th,html[dir="rtl"] td,html[dir="rtl"] asid
 html[dir="rtl"] .kpi{{text-align:right}}
 html[dir="rtl"] .login{{text-align:right}}
 html[dir="rtl"] .user-pill{{border-left:0;border-right:1px solid var(--line)}}
+.user-edit{{display:grid;grid-template-columns:1.2fr 1.7fr 1fr 1fr 1.3fr auto;gap:8px;align-items:center;min-width:980px}}
+.user-edit input,.user-edit select{{min-width:0}}
+.user-actions{{display:flex;gap:7px;align-items:center}}
+.reset-btn{{background:#17202c;color:#f6b642;border:1px solid #3d4654;box-shadow:none}}
+.flash{{margin-bottom:16px;padding:12px 14px;border:1px solid rgba(57,217,138,.32);background:rgba(57,217,138,.08);color:#9af0c6;border-radius:9px}}
+html[data-theme="light"]{{background:#f6f3ed}}
+html[data-theme="light"] body{{background:
+radial-gradient(circle at 82% 10%,rgba(245,165,36,.11),transparent 27%),
+linear-gradient(rgba(90,99,115,.11) 1px,transparent 1px),
+linear-gradient(90deg,rgba(90,99,115,.11) 1px,transparent 1px),
+#f6f3ed;color:#2d3440}}
+html[data-theme="light"] header{{background:rgba(255,253,249,.94);border-bottom-color:#ddd6ca}}
+html[data-theme="light"] .brand{{color:#1d2530}}
+html[data-theme="light"] .head-actions{{color:#4b5563}}
+html[data-theme="light"] .lang-switch,html[data-theme="light"] .theme-switch{{background:#fff;color:#303846;border-color:#d8d1c6}}
+html[data-theme="light"] .logout-link{{color:#4b5563}}
+html[data-theme="light"] .user-pill{{border-color:#d8d1c6}}
+html[data-theme="light"] .avatar{{background:#fff7e8;border-color:#ded5c7}}
+html[data-theme="light"] aside{{background:rgba(255,253,249,.9);border-inline-end-color:#ddd6ca}}
+html[data-theme="light"] aside:before{{color:#989187}}
+html[data-theme="light"] aside a{{color:#536071}}
+html[data-theme="light"] aside a:hover{{background:#fff4dc;color:#1d2530}}
+html[data-theme="light"] .card{{background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(250,248,244,.98));border-color:#ded8cf;box-shadow:0 14px 32px rgba(71,58,35,.07)}}
+html[data-theme="light"] .card h2,html[data-theme="light"] .card h3,html[data-theme="light"] .top h1,html[data-theme="light"] .hero-title{{color:#202733}}
+html[data-theme="light"] .muted,html[data-theme="light"] .hero-sub{{color:#697586}}
+html[data-theme="light"] .kpi,html[data-theme="light"] .hero-stat b{{color:#202733}}
+html[data-theme="light"] .hero-stat{{background:#fff;border-color:#ded8cf}}
+html[data-theme="light"] th{{background:#f1eee8;color:#687382}}
+html[data-theme="light"] td{{color:#384454;border-bottom-color:#e3ddd4}}
+html[data-theme="light"] tr:hover td{{background:rgba(245,165,36,.05)}}
+html[data-theme="light"] form.gridform,html[data-theme="light"] .user-edit{{background:#f7f4ee;border-color:#ded8cf}}
+html[data-theme="light"] input,html[data-theme="light"] select,html[data-theme="light"] textarea{{background:#fff;color:#26303c;border-color:#d8d1c6}}
+html[data-theme="light"] input::placeholder,html[data-theme="light"] textarea::placeholder{{color:#9aa1aa}}
+html[data-theme="light"] select option{{background:#fff;color:#222}}
+html[data-theme="light"] .tag{{background:#f0ede7;border-color:#ddd6ca;color:#46505c}}
+html[data-theme="light"] .login{{background:#fffdf9;border-color:#ddd6ca;box-shadow:0 30px 70px rgba(64,52,29,.12)}}
+html[data-theme="light"] .login hr{{border-top-color:#e2dbd0}}
+html[data-theme="light"] .reset-btn{{background:#fff;color:#9b6400;border-color:#d6c7aa}}
+
 @media(max-width:1120px){{form.gridform{{grid-template-columns:repeat(3,minmax(140px,1fr))}}.grid{{grid-template-columns:repeat(2,minmax(0,1fr))}}.hero-strip{{grid-template-columns:1fr}}}}
 @media(max-width:780px){{header{{height:auto;min-height:68px;padding:12px 14px}}.brand{{font-size:20px}}.layout{{grid-template-columns:1fr}}aside{{display:none}}.grid{{grid-template-columns:1fr}}form.gridform{{grid-template-columns:1fr}}main{{padding:15px}}.card{{padding:14px}}.head-actions{{font-size:12px}}.user-pill span{{display:none}}.top h1{{font-size:28px}}.hero-title{{font-size:31px}}.hero-copy{{padding:20px}}.hero-panel{{grid-template-columns:1fr 1fr}}}}
 </style></head><body>
-<header><a class='brand' href='/'><span class='brand-mark'>A</span><span>Accountant <em>Pro</em></span></a><div class='head-actions'><button class='lang-switch' type='button' onclick='toggleLanguage()'>العربية</button>{f"<div class='user-pill'><span class='avatar'>◌</span><span>{u['name']} · {role}</span></div><a class='logout-link' href='/logout'>Logout</a>" if u else ''}</div></header>
+<header><a class='brand' href='/'><span class='brand-mark'>A</span><span>Accountant <em>Pro</em></span></a><div class='head-actions'><button class='theme-switch' type='button' onclick='toggleTheme()'>☀ Light</button><button class='lang-switch' type='button' onclick='toggleLanguage()'>العربية</button>{f"<div class='user-pill'><span class='avatar'>◌</span><span>{u['name']}</span></div><a class='logout-link' href='/logout'>Logout</a>" if u else ''}</div></header>
 {f"<div class='layout'><aside>{nav(role)}</aside><main><div class='top'><h1>{title}</h1></div>{body}</main></div>" if u else f"<main>{body}</main>"}
 <script>
 const AR = {{
@@ -188,7 +227,7 @@ const AR = {{
 "Code":"الرمز","Account":"الحساب","Account name":"اسم الحساب","Asset":"أصل","Liability":"التزام","Equity":"حقوق الملكية","Add account":"إضافة حساب",
 "Debit":"مدين","Credit":"دائن","Debit account":"الحساب المدين","Credit account":"الحساب الدائن","Post entry":"ترحيل القيد","Posted":"مرحل",
 "Profit & Loss":"الأرباح والخسائر","Balance Sheet Snapshot":"ملخص الميزانية العمومية","Assets":"الأصول","Liabilities":"الالتزامات","VAT Summary":"ملخص ضريبة القيمة المضافة","Output VAT":"ضريبة المخرجات","Input VAT":"ضريبة المدخلات","Net VAT":"صافي الضريبة","Exports":"التصدير","Transactions CSV":"تصدير المعاملات CSV","Invoices CSV":"تصدير الفواتير CSV",
-"Full name":"الاسم الكامل","Role":"الدور","Admin":"مدير","Accountant":"محاسب","Viewer":"مشاهد","Active":"نشط","Add user":"إضافة مستخدم",
+"Full name":"الاسم الكامل","Role":"الدور","Admin":"مدير","Accountant":"محاسب","Viewer":"مشاهد","Active":"نشط","Disabled":"معطل","Add user":"إضافة مستخدم","User Management":"إدارة المستخدمين","Save":"حفظ","Reset password":"إعادة تعيين كلمة المرور","New password (optional)":"كلمة مرور جديدة (اختياري)",
 "Consulting revenue":"إيراد الاستشارات","Sales":"المبيعات","Office rent":"إيجار المكتب","Operations":"العمليات","Software subscriptions":"اشتراكات البرامج","IT":"تقنية المعلومات","Support contract":"عقد الدعم","Services":"الخدمات","Office":"المكتب","Monthly office supplies":"مستلزمات المكتب الشهرية","Initial capital":"رأس المال الافتتاحي","Paid in full":"مدفوع بالكامل","System Admin":"مدير النظام","Accountant User":"مستخدم محاسب",
 "Cash":"النقد","Accounts Receivable":"الذمم المدينة","Accounts Payable":"الذمم الدائنة","Owner Equity":"حقوق المالك","Sales Revenue":"إيرادات المبيعات","Operating Expenses":"المصروفات التشغيلية"
 }};
@@ -207,6 +246,17 @@ function applyLanguage(lang) {{
   document.title=(lang==='ar'?(AR['{title}']||'{title}'):'{title}')+' - '+(lang==='ar'?'المحاسب برو':'Accountant Pro');
 }}
 function toggleLanguage() {{const current=localStorage.getItem('accountant_lang')||'en';applyLanguage(current==='ar'?'en':'ar');}}
+function applyTheme(theme) {{
+  document.documentElement.setAttribute('data-theme',theme);
+  localStorage.setItem('accountant_theme',theme);
+  const b=document.querySelector('.theme-switch');
+  if(b) b.textContent=theme==='light'?'☾ Dark':'☀ Light';
+}}
+function toggleTheme() {{
+  const current=localStorage.getItem('accountant_theme')||'dark';
+  applyTheme(current==='dark'?'light':'dark');
+}}
+applyTheme(localStorage.getItem('accountant_theme')||'dark');
 applyLanguage(localStorage.getItem('accountant_lang')||'en');
 </script></body></html>"""
 
@@ -391,14 +441,57 @@ def users_page(request:Request):
     if g:return g
     if user(request)["role"]!="Admin": return RedirectResponse("/",303)
     items=q("SELECT id,name,email,role,status FROM users ORDER BY id")
-    rows="".join(f"<tr><td>{r['name']}</td><td>{r['email']}</td><td>{r['role']}</td><td>{r['status']}</td></tr>" for r in items)
+    flash=request.session.pop("flash",None)
+    flash_html=f"<div class='flash'>{flash}</div>" if flash else ""
+    rows=""
+    for r in items:
+        role_opts="".join(f"<option {'selected' if x==r['role'] else ''}>{x}</option>" for x in ["Admin","Accountant","Viewer"])
+        status_opts="".join(f"<option {'selected' if x==r['status'] else ''}>{x}</option>" for x in ["Active","Disabled"])
+        rows+=f"""<tr><td colspan='6'>
+        <form class='user-edit' method='post' action='/users/{r['id']}/update'>
+          <input name='name' value='{r['name']}' required>
+          <input name='email' type='email' value='{r['email']}' required>
+          <select name='role'>{role_opts}</select>
+          <select name='status'>{status_opts}</select>
+          <input name='password' type='password' placeholder='New password (optional)'>
+          <div class='user-actions'><button type='submit'>Save</button></form>
+          <form method='post' action='/users/{r['id']}/reset-password'><button class='reset-btn' type='submit'>Reset password</button></form></div>
+        </td></tr>"""
     form="""<form class='gridform' method='post'><input name='name' placeholder='Full name' required><input name='email' type='email' placeholder='Email' required><input name='password' type='password' placeholder='Password' required><select name='role'><option>Accountant</option><option>Admin</option><option>Viewer</option></select><button>Add user</button></form>"""
-    return page(request,"Users & Roles",f"<div class='card'>{form}<table><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr>{rows}</table></div>")
+    return page(request,"Users & Roles",f"<div class='card'>{flash_html}{form}<table><tr><th colspan='6'>User Management</th></tr>{rows}</table></div>")
 
 @app.post("/users")
 def add_user(request:Request,name:str=Form(...),email:str=Form(...),password:str=Form(...),role:str=Form(...)):
     if not user(request) or user(request)["role"]!="Admin":return RedirectResponse("/",303)
+    if q("SELECT id FROM users WHERE email=:e",{"e":email},True):
+        request.session["flash"]="Email already exists."
+        return RedirectResponse("/users",303)
     execq("INSERT INTO users(name,email,password_hash,role,status) VALUES(:n,:e,:p,:r,'Active')",{"n":name,"e":email,"p":hash_pw(password),"r":role})
+    request.session["flash"]="User created successfully."
+    return RedirectResponse("/users",303)
+
+@app.post("/users/{user_id}/update")
+def update_user(request:Request,user_id:int,name:str=Form(...),email:str=Form(...),role:str=Form(...),status:str=Form(...),password:str=Form("")):
+    if not user(request) or user(request)["role"]!="Admin":return RedirectResponse("/",303)
+    duplicate=q("SELECT id FROM users WHERE email=:e AND id<>:id",{"e":email,"id":user_id},True)
+    if duplicate:
+        request.session["flash"]="Email already exists."
+        return RedirectResponse("/users",303)
+    execq("UPDATE users SET name=:n,email=:e,role=:r,status=:s WHERE id=:id",{"n":name,"e":email,"r":role,"s":status,"id":user_id})
+    if password.strip():
+        execq("UPDATE users SET password_hash=:p WHERE id=:id",{"p":hash_pw(password.strip()),"id":user_id})
+    if user(request)["id"]==user_id:
+        request.session["user"]={"id":user_id,"name":name,"email":email,"role":role}
+    request.session["flash"]="User updated successfully."
+    return RedirectResponse("/users",303)
+
+@app.post("/users/{user_id}/reset-password")
+def reset_user_password(request:Request,user_id:int):
+    if not user(request) or user(request)["role"]!="Admin":return RedirectResponse("/",303)
+    alphabet="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$"
+    temp="".join(secrets.choice(alphabet) for _ in range(14))
+    execq("UPDATE users SET password_hash=:p WHERE id=:id",{"p":hash_pw(temp),"id":user_id})
+    request.session["flash"]=f"Temporary password: {temp} — give it securely to the user and ask them to change it."
     return RedirectResponse("/users",303)
 
 @app.get("/export/{kind}.csv")
