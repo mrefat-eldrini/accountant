@@ -92,13 +92,67 @@ def nav(role):
 def page(request,title,body):
     u=user(request)
     role=u["role"] if u else ""
-    return f"""<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>{title} - Accountant Pro</title>
+    return f"""<!doctype html><html lang='en' dir='ltr'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>{title} - Accountant Pro</title>
 <style>
 :root{{--bg:#f4f7fb;--ink:#14213d;--muted:#6b7280;--nav:#0d2742;--line:#dfe7ef;--brand:#1f6fb2;--good:#12805c;--bad:#c23b3b;--warn:#b7791f}}
-*{{box-sizing:border-box}}body{{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--ink)}}header{{background:var(--nav);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5}}header b{{font-size:20px}}.layout{{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 58px)}}aside{{background:#fff;border-right:1px solid var(--line);padding:18px}}aside a{{display:block;padding:10px 12px;margin:4px 0;border-radius:8px;color:#334155;text-decoration:none}}aside a:hover{{background:#eef5fb;color:var(--brand)}}main{{padding:26px;max-width:1400px;width:100%;margin:0 auto}}.top{{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}}.grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}}.card{{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 3px 12px rgba(15,23,42,.04)}}.kpi{{font-size:26px;font-weight:750;margin-top:7px}}.muted{{color:var(--muted);font-size:13px}}.good{{color:var(--good)}}.bad{{color:var(--bad)}}.warn{{color:var(--warn)}}table{{width:100%;border-collapse:collapse;background:#fff}}th,td{{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}}th{{background:#eff4f8}}form.gridform{{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px}}input,select,textarea,button{{padding:10px 11px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}}button,.btn{{background:var(--brand);color:white;border:0;text-decoration:none;display:inline-block;padding:10px 14px;border-radius:8px;cursor:pointer}}.tag{{padding:4px 8px;border-radius:999px;background:#edf2f7;font-size:12px}}.section{{margin-top:20px}}.login{{max-width:420px;margin:80px auto}}.login input{{width:100%;margin:8px 0}}.login button{{width:100%;margin-top:8px}}@media(max-width:900px){{.layout{{grid-template-columns:1fr}}aside{{display:none}}.grid{{grid-template-columns:1fr 1fr}}form.gridform{{grid-template-columns:1fr 1fr}}main{{padding:16px}}}}
+*{{box-sizing:border-box}}body{{margin:0;font-family:Inter,"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);text-align:start}}header{{background:var(--nav);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5;gap:16px}}header b{{font-size:20px;white-space:nowrap}}.head-actions{{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}}.lang-switch{{background:#fff;color:#0d2742;border:0;border-radius:999px;padding:8px 13px;font-weight:700;cursor:pointer;min-width:72px}}.layout{{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:calc(100vh - 58px)}}aside{{background:#fff;border-inline-end:1px solid var(--line);padding:18px}}aside a{{display:block;padding:10px 12px;margin:4px 0;border-radius:8px;color:#334155;text-decoration:none;text-align:start}}aside a:hover{{background:#eef5fb;color:var(--brand)}}main{{padding:26px;max-width:1400px;width:100%;margin:0 auto;min-width:0}}.top{{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}}.top h1{{margin:0}}.grid{{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}}.card{{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 3px 12px rgba(15,23,42,.04);overflow:auto}}.kpi{{font-size:26px;font-weight:750;margin-top:7px;direction:ltr;unicode-bidi:isolate;text-align:start}}.muted{{color:var(--muted);font-size:13px}}.good{{color:var(--good)}}.bad{{color:var(--bad)}}.warn{{color:var(--warn)}}table{{width:100%;border-collapse:collapse;background:#fff;min-width:680px}}th,td{{padding:11px 12px;border-bottom:1px solid var(--line);text-align:start;font-size:14px;vertical-align:middle}}th{{background:#eff4f8;white-space:nowrap}}form.gridform{{display:grid;grid-template-columns:repeat(6,minmax(130px,1fr));gap:10px;margin-bottom:16px}}input,select,textarea,button{{padding:10px 11px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;text-align:start}}input[type="email"],input[type="password"],input[type="number"],input[type="date"]{{direction:ltr}}button,.btn{{background:var(--brand);color:white;border:0;text-decoration:none;display:inline-block;padding:10px 14px;border-radius:8px;cursor:pointer;text-align:center}}.tag{{padding:4px 8px;border-radius:999px;background:#edf2f7;font-size:12px;white-space:nowrap}}.section{{margin-top:20px}}.login{{max-width:440px;margin:70px auto}}.login input{{width:100%;margin:8px 0}}.login button{{width:100%;margin-top:8px}}.ltr{{direction:ltr;unicode-bidi:isolate}}html[dir="rtl"] body{{font-family:Tahoma,"Segoe UI",Arial,sans-serif}}html[dir="rtl"] .head-actions{{justify-content:flex-start}}html[dir="rtl"] .layout{{grid-template-columns:240px minmax(0,1fr)}}html[dir="rtl"] input:not([type="email"]):not([type="password"]):not([type="number"]):not([type="date"]),html[dir="rtl"] select,html[dir="rtl"] textarea{{direction:rtl;text-align:right}}html[dir="rtl"] table,html[dir="rtl"] th,html[dir="rtl"] td{{text-align:right}}html[dir="rtl"] aside a{{text-align:right}}html[dir="rtl"] .kpi{{text-align:right}}html[dir="rtl"] .login{{text-align:right}}
+@media(max-width:1050px){{form.gridform{{grid-template-columns:repeat(3,minmax(140px,1fr))}}.grid{{grid-template-columns:repeat(2,minmax(0,1fr))}}}}
+@media(max-width:760px){{header{{padding:13px 14px}}.layout{{grid-template-columns:1fr}}aside{{display:none}}.grid{{grid-template-columns:1fr}}form.gridform{{grid-template-columns:1fr}}main{{padding:14px}}.card{{padding:14px}}.head-actions{{font-size:13px}}}}
 </style></head><body>
-<header><b>Accountant Pro</b><div>{u['name'] if u else ''} {f"· {role}" if u else ''} {f"<a style='color:#fff;margin-left:14px' href='/logout'>Logout</a>" if u else ''}</div></header>
+<header><b data-i18n='app_name'>Accountant Pro</b><div class='head-actions'><button class='lang-switch' type='button' onclick='toggleLanguage()'>العربية</button><span>{u['name'] if u else ''} {f"· {role}" if u else ''}</span>{f"<a data-i18n='logout' style='color:#fff' href='/logout'>Logout</a>" if u else ''}</div></header>
 {f"<div class='layout'><aside>{nav(role)}</aside><main><div class='top'><h1>{title}</h1></div>{body}</main></div>" if u else f"<main>{body}</main>"}
+<script>
+const AR = {{
+"Accountant Pro":"المحاسب برو","Dashboard":"لوحة التحكم","Transactions":"المعاملات","Invoices":"الفواتير","Expenses":"المصروفات","Customers":"العملاء","Vendors":"الموردون","Chart of Accounts":"دليل الحسابات","Journal":"القيود اليومية","Journal Entries":"القيود اليومية","Reports":"التقارير","Users":"المستخدمون","Users & Roles":"المستخدمون والصلاحيات","Logout":"تسجيل الخروج",
+"Login":"تسجيل الدخول","Sign in":"تسجيل الدخول","Use one of the demo accounts below.":"استخدم أحد الحسابات التجريبية أدناه.","Email":"البريد الإلكتروني","Password":"كلمة المرور","Admin:":"المدير:","Accountant:":"المحاسب:",
+"Revenue":"الإيرادات","Expenses":"المصروفات","Net profit":"صافي الربح","VAT tracked":"ضريبة القيمة المضافة","Accounts receivable":"الذمم المدينة","Accounts payable":"الذمم الدائنة","Overdue invoices":"الفواتير المتأخرة","Database":"قاعدة البيانات","SQLite Demo":"SQLite تجريبي","Recent activity":"النشاط الأخير",
+"Date":"التاريخ","Description":"الوصف","Category":"الفئة","Type":"النوع","Amount":"المبلغ","Reference":"المرجع","Ref":"المرجع","Account code":"رمز الحساب","VAT":"ضريبة القيمة المضافة","Income":"إيراد","Expense":"مصروف","income":"إيراد","expense":"مصروف","Add transaction":"إضافة معاملة",
+"Name":"الاسم","Customer name":"اسم العميل","Vendor name":"اسم المورد","Phone":"الهاتف","TRN / Tax no.":"الرقم الضريبي","Tax no.":"الرقم الضريبي","Address":"العنوان","Balance":"الرصيد","Add customer":"إضافة عميل","Add vendor":"إضافة مورد",
+"Invoice no.":"رقم الفاتورة","Invoice":"الفاتورة","Customer":"العميل","Issue":"الإصدار","Due":"الاستحقاق","Status":"الحالة","Subtotal":"المجموع قبل الضريبة","Total":"الإجمالي","Paid":"مدفوع","Unpaid":"غير مدفوع","Partially Paid":"مدفوع جزئياً","Notes":"ملاحظات","Create invoice":"إنشاء فاتورة",
+"Vendor":"المورد","Payment method":"طريقة الدفع","Bank Transfer":"تحويل بنكي","Card":"بطاقة","Cash":"نقداً","Add expense":"إضافة مصروف",
+"Code":"الرمز","Account":"الحساب","Account name":"اسم الحساب","Asset":"أصل","Liability":"التزام","Equity":"حقوق الملكية","Revenue":"الإيرادات","Expense":"مصروف","Add account":"إضافة حساب",
+"Debit":"مدين","Credit":"دائن","Debit account":"الحساب المدين","Credit account":"الحساب الدائن","Post entry":"ترحيل القيد","Posted":"مرحل",
+"Profit & Loss":"الأرباح والخسائر","Balance Sheet Snapshot":"ملخص الميزانية العمومية","Assets":"الأصول","Liabilities":"الالتزامات","Equity":"حقوق الملكية","VAT Summary":"ملخص ضريبة القيمة المضافة","Output VAT":"ضريبة المخرجات","Input VAT":"ضريبة المدخلات","Net VAT":"صافي الضريبة","Exports":"التصدير","Transactions CSV":"تصدير المعاملات CSV","Invoices CSV":"تصدير الفواتير CSV",
+"Full name":"الاسم الكامل","Role":"الدور","Admin":"مدير","Accountant":"محاسب","Viewer":"مشاهد","Active":"نشط","Add user":"إضافة مستخدم",
+"Consulting revenue":"إيراد الاستشارات","Sales":"المبيعات","Office rent":"إيجار المكتب","Operations":"العمليات","Software subscriptions":"اشتراكات البرامج","IT":"تقنية المعلومات","Support contract":"عقد الدعم","Services":"الخدمات","Office":"المكتب","Monthly office supplies":"مستلزمات المكتب الشهرية","Initial capital":"رأس المال الافتتاحي","Paid in full":"مدفوع بالكامل","System Admin":"مدير النظام","Accountant User":"مستخدم محاسب",
+"Cash":"النقد","Accounts Receivable":"الذمم المدينة","Accounts Payable":"الذمم الدائنة","Owner Equity":"حقوق المالك","Sales Revenue":"إيرادات المبيعات","Operating Expenses":"المصروفات التشغيلية"
+}};
+function translateText(s,lang) {{
+  const trimmed=s.trim();
+  if(!trimmed) return s;
+  if(lang==='ar' && AR[trimmed]) return s.replace(trimmed,AR[trimmed]);
+  if(lang==='en') {{
+    const pair=Object.entries(AR).find(([en,ar])=>ar===trimmed);
+    if(pair) return s.replace(trimmed,pair[0]);
+  }}
+  return s;
+}}
+function applyLanguage(lang) {{
+  document.documentElement.lang=lang;
+  document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+  localStorage.setItem('accountant_lang',lang);
+  document.querySelectorAll('body *').forEach(el=>{{
+    if(['SCRIPT','STYLE','INPUT','TEXTAREA'].includes(el.tagName)) return;
+    [...el.childNodes].forEach(n=>{{if(n.nodeType===3)n.nodeValue=translateText(n.nodeValue,lang);}});
+  }});
+  document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{{
+    const p=el.getAttribute('placeholder');
+    if(lang==='ar' && AR[p]) el.setAttribute('placeholder',AR[p]);
+    else if(lang==='en') {{
+      const pair=Object.entries(AR).find(([en,ar])=>ar===p);
+      if(pair) el.setAttribute('placeholder',pair[0]);
+    }}
+  }});
+  document.querySelectorAll('option').forEach(el=>{{el.textContent=translateText(el.textContent,lang);}});
+  document.querySelector('.lang-switch').textContent=lang==='ar'?'English':'العربية';
+  document.title=(lang==='ar'?(AR['{title}']||'{title}'):'{title}')+' - '+(lang==='ar'?'المحاسب برو':'Accountant Pro');
+}}
+function toggleLanguage() {{
+  const current=localStorage.getItem('accountant_lang')||'en';
+  applyLanguage(current==='ar'?'en':'ar');
+}}
+applyLanguage(localStorage.getItem('accountant_lang')||'en');
+</script>
 </body></html>"""
 
 @app.get("/login",response_class=HTMLResponse)
