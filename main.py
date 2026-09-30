@@ -11,7 +11,7 @@ import csv
 DB_URL=os.getenv("DATABASE_URL","sqlite:///./accountant.db")
 if DB_URL.startswith("postgresql://"): DB_URL=DB_URL.replace("postgresql://","postgresql+psycopg://",1)
 engine=create_engine(DB_URL,pool_pre_ping=True)
-APP_VERSION="0.4.0"
+APP_VERSION="0.5.0"
 app=FastAPI(title="Accountant Pro")
 app.add_middleware(SessionMiddleware,secret_key=os.getenv("SESSION_SECRET","accountant-demo-secret-change-me"),same_site="lax",https_only=False)
 
@@ -174,6 +174,46 @@ main{{padding:32px;max-width:1540px;width:100%;margin:0 auto;min-width:0}}
 .kpi{{font-size:27px;font-weight:760;margin-top:9px;direction:ltr;unicode-bidi:isolate;text-align:start;color:#f6f7f9;letter-spacing:-.6px}}
 .kpi.good,.good{{color:var(--good)}}.bad{{color:var(--bad)}}.warn{{color:var(--warn)}}.muted{{color:var(--muted);font-size:12px;letter-spacing:.2px}}
 .section{{margin-top:18px}}
+.exec-kpis{{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.analytics-grid{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}
+.chart-card{{min-height:310px;overflow:hidden}}
+.chart-title{{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}}
+.chart-title h3{{margin:3px 0 0;font-size:18px}}
+.chart-legend{{display:flex;gap:13px;color:#9ba6b6;font-size:11px;white-space:nowrap}}
+.chart-legend span{{display:flex;align-items:center;gap:6px}}
+.chart-legend i{{width:9px;height:9px;border-radius:2px;display:inline-block}}
+.legend-revenue{{background:var(--good)}}.legend-expense{{background:var(--bad)}}
+.mini-note{{color:#738094;font-size:11px;margin-top:7px}}
+.month-chart{{height:220px;display:flex;align-items:flex-end;gap:12px;padding:16px 6px 0;border-bottom:1px solid #283342}}
+.month-group{{flex:1;min-width:38px;text-align:center}}
+.month-bars{{height:175px;display:flex;align-items:flex-end;justify-content:center;gap:5px}}
+.month-bars span{{display:block;width:22px;min-height:2px;border-radius:5px 5px 2px 2px;transition:.2s}}
+.month-bars span:hover{{filter:brightness(1.14)}}
+.bar-income{{background:linear-gradient(180deg,#5ae4a0,#1f9b68)}}.bar-out{{background:linear-gradient(180deg,#ff7d86,#c63c48)}}
+.month-label{{font-size:11px;color:#7f8b9d;margin-top:8px}}
+.profit-chart{{height:220px;display:flex;align-items:center;gap:10px;padding:15px 4px 0}}
+.profit-col{{flex:1;height:190px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:7px}}
+.profit-value{{font-size:10px;color:#98a4b5;white-space:nowrap}}
+.profit-bar{{width:34px;border-radius:7px 7px 3px 3px;min-height:3px}}
+.profit-positive{{background:linear-gradient(180deg,#f5b84b,#b97813)}}.profit-negative{{background:linear-gradient(180deg,#ff737e,#ac2e39)}}
+.hbar-row{{margin:15px 0}}.hbar-head{{display:flex;justify-content:space-between;gap:12px;font-size:12px;margin-bottom:6px}}
+.hbar-head span{{color:#bcc4cf;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}.hbar-head b{{color:#f1f3f6;white-space:nowrap;font-size:11px}}
+.hbar-track{{height:8px;background:#0a0f15;border:1px solid #222d3a;border-radius:999px;overflow:hidden}}
+.hbar-track span{{display:block;height:100%;background:linear-gradient(90deg,#c47a13,#f5b541);border-radius:999px}}
+.collection-wrap{{display:grid;grid-template-columns:180px 1fr;align-items:center;gap:26px;padding:10px}}
+.donut{{width:165px;height:165px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--good) 0 var(--angle),#273140 var(--angle) 360deg);position:relative}}
+.donut:after{{content:"";position:absolute;width:112px;height:112px;border-radius:50%;background:#10161f;border:1px solid #293544}}
+.donut div{{position:relative;z-index:1;text-align:center}}.donut b{{display:block;font-size:25px;color:#f3f5f8}}.donut span{{font-size:10px;color:#8390a1}}
+.collection-stats{{display:grid;grid-template-columns:1fr 1fr;gap:12px}}
+.collection-stats div{{background:#0c1219;border:1px solid #27313e;border-radius:9px;padding:12px}}
+.collection-stats b{{display:block;margin-top:5px;font-size:15px}}
+.insight-row{{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid #242d39}}
+.insight-row:last-child{{border-bottom:0}}.insight-dot{{width:9px;height:9px;background:var(--gold);border-radius:50%;margin-top:5px;box-shadow:0 0 12px rgba(245,165,36,.35);flex:0 0 auto}}
+.insight-row b{{color:#f2f4f7;font-size:13px}}.insight-row p{{margin:5px 0 0;color:#929eae;font-size:12px;line-height:1.55}}
+.empty-chart{{color:#727f90;padding:60px 0;text-align:center}}
+@media(max-width:1250px){{.exec-kpis{{grid-template-columns:repeat(3,minmax(0,1fr))}}}}
+@media(max-width:900px){{.analytics-grid{{grid-template-columns:1fr}}.exec-kpis{{grid-template-columns:repeat(2,minmax(0,1fr))}}.collection-wrap{{grid-template-columns:1fr;justify-items:center}}}}
+
 table{{width:100%;border-collapse:separate;border-spacing:0;background:transparent;min-width:720px}}
 th,td{{padding:12px 13px;border-bottom:1px solid #222b38;text-align:start;font-size:13px;vertical-align:middle}}
 th{{background:#0f151e;color:#98a4b5;white-space:nowrap;font-size:11px;text-transform:uppercase;letter-spacing:.6px}}
@@ -263,7 +303,7 @@ const AR = {{
 "Accountant Pro":"المحاسب برو","Dashboard":"لوحة التحكم","Transactions":"المعاملات","Invoices":"الفواتير","Expenses":"المصروفات","Customers":"العملاء","Vendors":"الموردون","Chart of Accounts":"دليل الحسابات","Journal":"القيود اليومية","Journal Entries":"القيود اليومية","Reports":"التقارير","Users":"المستخدمون","Users & Roles":"المستخدمون والصلاحيات","Logout":"تسجيل الخروج",
 "Login":"تسجيل الدخول","Sign in":"تسجيل الدخول","Use one of the demo accounts below.":"استخدم أحد الحسابات التجريبية أدناه.","Email":"البريد الإلكتروني","Password":"كلمة المرور","Admin:":"المدير:","Accountant:":"المحاسب:",
 "Revenue":"الإيرادات","Expenses":"المصروفات","Net profit":"صافي الربح","VAT tracked":"ضريبة القيمة المضافة","Accounts receivable":"الذمم المدينة","Accounts payable":"الذمم الدائنة","Overdue invoices":"الفواتير المتأخرة","Database":"قاعدة البيانات","SQLite Demo":"SQLite تجريبي","Recent activity":"النشاط الأخير",
-"Financial clarity for every decision.":"وضوح مالي لكل قرار.","A premium view of your accounting health, cash position, receivables and obligations.":"رؤية احترافية لصحتك المالية والسيولة والذمم والالتزامات.","Financial Intelligence · Accounting · VAT":"الذكاء المالي · المحاسبة · ضريبة القيمة المضافة",
+"Financial clarity for every decision.":"وضوح مالي لكل قرار.","A premium view of your accounting health, cash position, receivables and obligations.":"رؤية احترافية لصحتك المالية والسيولة والذمم والالتزامات.","Financial Intelligence · Accounting · VAT":"الذكاء المالي · المحاسبة · ضريبة القيمة المضافة","Executive Business Summary · Financial Intelligence":"الملخص التنفيذي للأعمال · الذكاء المالي","Your whole business in one view.":"كل أعمالك في نظرة واحدة.","Profitability, customer collections, obligations and spending concentration — designed for owners and management.":"الربحية والتحصيلات والالتزامات وتركيز المصروفات — مصممة للمالكين والإدارة.","Profit margin":"هامش الربح","Business signal":"مؤشر الأعمال","Collection rate":"معدل التحصيل","Revenue vs Expenses":"الإيرادات مقابل المصروفات","Net Profit Trend":"اتجاه صافي الربح","Invoice Collection Status":"حالة تحصيل الفواتير","Top Expense Categories":"أعلى فئات المصروفات","Top Customers by Invoice Value":"أهم العملاء حسب قيمة الفواتير","Executive Insights":"الرؤى التنفيذية","Invoiced":"إجمالي الفواتير","Collected":"المحصّل","Outstanding":"المستحق","Overdue value":"قيمة المتأخرات","Profitability":"الربحية","Collections":"التحصيلات","Cost concentration":"تركيز التكاليف","Recent Activity":"النشاط الأخير",
 "Date":"التاريخ","Description":"الوصف","Category":"الفئة","Type":"النوع","Amount":"المبلغ","Reference":"المرجع","Ref":"المرجع","Account code":"رمز الحساب","VAT":"ضريبة القيمة المضافة","Income":"إيراد","Expense":"مصروف","income":"إيراد","expense":"مصروف","Add transaction":"إضافة معاملة",
 "Name":"الاسم","Customer name":"اسم العميل","Vendor name":"اسم المورد","Phone":"الهاتف","TRN / Tax no.":"الرقم الضريبي","Tax no.":"الرقم الضريبي","Address":"العنوان","Balance":"الرصيد","Add customer":"إضافة عميل","Add vendor":"إضافة مورد",
 "Invoice no.":"رقم الفاتورة","Invoice":"الفاتورة","Customer":"العميل","Issue":"الإصدار","Due":"الاستحقاق","Status":"الحالة","Subtotal":"المجموع قبل الضريبة","Total":"الإجمالي","Paid":"مدفوع","Unpaid":"غير مدفوع","Partially Paid":"مدفوع جزئياً","Notes":"ملاحظات","Create invoice":"إنشاء فاتورة",
@@ -329,6 +369,27 @@ def logout(request:Request):
 @app.get("/health")
 def health(): return {"status":"ok","version":APP_VERSION,"database":"postgresql" if is_pg() else "sqlite"}
 
+def months_back(count=6):
+    out=[]
+    y,m=date.today().year,date.today().month
+    for _ in range(count):
+        out.append((y,m))
+        m-=1
+        if m==0:
+            m=12;y-=1
+    out.reverse()
+    return out
+
+def hbars(items):
+    if not items:return "<div class='empty-chart'>No data yet</div>"
+    maximum=max([Decimal(str(v or 0)) for _,v in items] or [Decimal("1")])
+    if maximum<=0: maximum=Decimal("1")
+    rows=[]
+    for name,value in items[:5]:
+        value=Decimal(str(value or 0));pct=float(value/maximum*100)
+        rows.append(f"<div class='hbar-row'><div class='hbar-head'><span>{name}</span><b>{money(value)}</b></div><div class='hbar-track'><span style='width:{pct:.1f}%'></span></div></div>")
+    return "".join(rows)
+
 @app.get("/",response_class=HTMLResponse)
 def dashboard(request:Request):
     g=guard(request)
@@ -336,28 +397,93 @@ def dashboard(request:Request):
     s=q("""SELECT COALESCE(SUM(CASE WHEN txn_type='income' THEN amount ELSE 0 END),0) income,
     COALESCE(SUM(CASE WHEN txn_type='expense' THEN amount ELSE 0 END),0) expense,
     COALESCE(SUM(tax),0) tax FROM transactions""",one=True)
-    ar=q("SELECT COALESCE(SUM(total-paid),0) v FROM invoices WHERE status!='Paid'",one=True)["v"]
-    ap=q("SELECT COALESCE(SUM(total),0) v FROM expenses WHERE status!='Paid'",one=True)["v"]
+    income=Decimal(str(s["income"]));expense=Decimal(str(s["expense"]));profit=income-expense
+    margin=(profit/income*100) if income>0 else Decimal("0")
+    ar=Decimal(str(q("SELECT COALESCE(SUM(total-paid),0) v FROM invoices WHERE status!='Paid'",one=True)["v"]))
+    ap=Decimal(str(q("SELECT COALESCE(SUM(total),0) v FROM expenses WHERE status!='Paid'",one=True)["v"]))
     overdue=q("SELECT COUNT(*) c FROM invoices WHERE due_date < :d AND status!='Paid'",{"d":str(date.today())},True)["c"]
+
+    months=months_back(6)
+    month_keys={f"{y:04d}-{m:02d}":i for i,(y,m) in enumerate(months)}
+    rev=[Decimal("0") for _ in months]; exp=[Decimal("0") for _ in months]
+    for r in q("SELECT txn_date,txn_type,amount FROM transactions ORDER BY txn_date"):
+        key=str(r["txn_date"])[:7]
+        if key in month_keys:
+            i=month_keys[key]
+            if r["txn_type"]=="income":rev[i]+=Decimal(str(r["amount"] or 0))
+            elif r["txn_type"]=="expense":exp[i]+=Decimal(str(r["amount"] or 0))
+    max_bar=max(rev+exp+[Decimal("1")])
+    month_html=[]
+    profit_html=[]
+    profit_vals=[]
+    for i,(y,m) in enumerate(months):
+        label=date(y,m,1).strftime("%b")
+        rh=float(rev[i]/max_bar*100);eh=float(exp[i]/max_bar*100)
+        month_html.append(f"<div class='month-group'><div class='month-bars'><span class='bar-income' style='height:{max(2,rh):.1f}%' title='Revenue: {money(rev[i])}'></span><span class='bar-out' style='height:{max(2,eh):.1f}%' title='Expenses: {money(exp[i])}'></span></div><div class='month-label'>{label}</div></div>")
+        profit_vals.append(rev[i]-exp[i])
+    max_profit=max([abs(v) for v in profit_vals]+[Decimal("1")])
+    for i,(y,m) in enumerate(months):
+        label=date(y,m,1).strftime("%b");v=profit_vals[i];h=float(abs(v)/max_profit*100)
+        cls="profit-positive" if v>=0 else "profit-negative"
+        profit_html.append(f"<div class='profit-col'><div class='profit-value'>{money(v)}</div><div class='profit-bar {cls}' style='height:{max(3,h):.1f}%'></div><div class='month-label'>{label}</div></div>")
+
+    invoices=q("SELECT customer_name,due_date,status,total,paid FROM invoices")
+    inv_total=sum((Decimal(str(r["total"] or 0)) for r in invoices),Decimal("0"))
+    inv_paid=sum((Decimal(str(r["paid"] or 0)) for r in invoices),Decimal("0"))
+    outstanding=max(inv_total-inv_paid,Decimal("0"))
+    overdue_value=sum((max(Decimal(str(r["total"] or 0))-Decimal(str(r["paid"] or 0)),Decimal("0")) for r in invoices if str(r["due_date"])<str(date.today()) and r["status"]!="Paid"),Decimal("0"))
+    collection=(inv_paid/inv_total*100) if inv_total>0 else Decimal("0")
+    angle=float(collection)*3.6
+
+    expense_map={}
+    for r in q("SELECT category,total FROM expenses"):
+        k=r["category"] or "Uncategorized";expense_map[k]=expense_map.get(k,Decimal("0"))+Decimal(str(r["total"] or 0))
+    top_exp=sorted(expense_map.items(),key=lambda x:x[1],reverse=True)[:5]
+    cust_map={}
+    for r in invoices:
+        k=r["customer_name"] or "Unknown";cust_map[k]=cust_map.get(k,Decimal("0"))+Decimal(str(r["total"] or 0))
+    top_cust=sorted(cust_map.items(),key=lambda x:x[1],reverse=True)[:5]
+
     recent=q("SELECT * FROM transactions ORDER BY id DESC LIMIT 6")
     rows="".join(f"<tr><td>{r['txn_date']}</td><td>{r['description']}</td><td>{r['category']}</td><td>{r['txn_type']}</td><td>{money(r['amount'])}</td></tr>" for r in recent)
-    profit=Decimal(str(s["income"]))-Decimal(str(s["expense"]))
+    signal="Healthy" if profit>=0 and overdue==0 else ("Watch" if profit>=0 else "Attention")
+    signal_cls="good" if signal=="Healthy" else ("warn" if signal=="Watch" else "bad")
+    largest=(f"{top_exp[0][0]} is the largest expense category at {money(top_exp[0][1])}." if top_exp else "No categorized expenses recorded yet.")
+
     body=f"""<div class='hero-strip'>
-      <div class='card hero-copy'><div class='eyebrow'>Financial Intelligence · Accounting · VAT</div><h2 class='hero-title'>Financial clarity for every decision.</h2><p class='hero-sub'>A premium view of your accounting health, cash position, receivables and obligations.</p></div>
+      <div class='card hero-copy'><div class='eyebrow'>Executive Business Summary · Financial Intelligence</div><h2 class='hero-title'>Your whole business in one view.</h2><p class='hero-sub'>Profitability, customer collections, obligations and spending concentration — designed for owners and management.</p></div>
       <div class='card hero-panel'>
-        <div class='hero-stat'><span class='muted'>Revenue</span><b>{money(s['income'])}</b></div>
+        <div class='hero-stat'><span class='muted'>Revenue</span><b>{money(income)}</b></div>
         <div class='hero-stat'><span class='muted'>Net profit</span><b>{money(profit)}</b></div>
-        <div class='hero-stat'><span class='muted'>Accounts receivable</span><b>{money(ar)}</b></div>
-        <div class='hero-stat'><span class='muted'>VAT tracked</span><b>{money(s['tax'])}</b></div>
+        <div class='hero-stat'><span class='muted'>Profit margin</span><b>{float(margin):.1f}%</b></div>
+        <div class='hero-stat'><span class='muted'>Business signal</span><b class='{signal_cls}'>{signal}</b></div>
       </div>
     </div>
-    <div class='grid'>
-      <div class='card'><div class='muted'>Revenue</div><div class='kpi good'>{money(s['income'])}</div></div>
-      <div class='card'><div class='muted'>Expenses</div><div class='kpi bad'>{money(s['expense'])}</div></div>
-      <div class='card'><div class='muted'>Accounts payable</div><div class='kpi'>{money(ap)}</div></div>
-      <div class='card'><div class='muted'>Overdue invoices</div><div class='kpi warn'>{overdue}</div></div>
+    <div class='grid exec-kpis'>
+      <div class='card'><div class='muted'>Revenue</div><div class='kpi good'>{money(income)}</div><div class='mini-note'>Total recorded income</div></div>
+      <div class='card'><div class='muted'>Expenses</div><div class='kpi bad'>{money(expense)}</div><div class='mini-note'>Total recorded expense</div></div>
+      <div class='card'><div class='muted'>Net profit</div><div class='kpi {'good' if profit>=0 else 'bad'}'>{money(profit)}</div><div class='mini-note'>{float(margin):.1f}% margin</div></div>
+      <div class='card'><div class='muted'>Receivables</div><div class='kpi'>{money(ar)}</div><div class='mini-note'>{overdue} overdue invoice(s)</div></div>
+      <div class='card'><div class='muted'>Payables</div><div class='kpi'>{money(ap)}</div><div class='mini-note'>Unpaid obligations</div></div>
+      <div class='card'><div class='muted'>Collection rate</div><div class='kpi'>{float(collection):.1f}%</div><div class='mini-note'>{money(inv_paid)} collected</div></div>
     </div>
-    <div class='card section'><h3>Recent activity</h3><table><tr><th>Date</th><th>Description</th><th>Category</th><th>Type</th><th>Amount</th></tr>{rows}</table></div>"""
+    <div class='analytics-grid section'>
+      <div class='card chart-card'><div class='chart-title'><div><div class='eyebrow'>6-MONTH TREND</div><h3>Revenue vs Expenses</h3></div><div class='chart-legend'><span><i class='legend-revenue'></i>Revenue</span><span><i class='legend-expense'></i>Expenses</span></div></div><div class='month-chart'>{''.join(month_html)}</div></div>
+      <div class='card chart-card'><div class='chart-title'><div><div class='eyebrow'>PROFITABILITY</div><h3>Net Profit Trend</h3></div></div><div class='profit-chart'>{''.join(profit_html)}</div></div>
+    </div>
+    <div class='analytics-grid section'>
+      <div class='card chart-card'><div class='chart-title'><div><div class='eyebrow'>COLLECTIONS</div><h3>Invoice Collection Status</h3></div></div><div class='collection-wrap'><div class='donut' style='--angle:{angle:.1f}deg'><div><b>{float(collection):.1f}%</b><span>collected</span></div></div><div class='collection-stats'><div><span class='muted'>Invoiced</span><b>{money(inv_total)}</b></div><div><span class='muted'>Collected</span><b class='good'>{money(inv_paid)}</b></div><div><span class='muted'>Outstanding</span><b class='warn'>{money(outstanding)}</b></div><div><span class='muted'>Overdue value</span><b class='bad'>{money(overdue_value)}</b></div></div></div></div>
+      <div class='card chart-card'><div class='chart-title'><div><div class='eyebrow'>SPENDING</div><h3>Top Expense Categories</h3></div></div>{hbars(top_exp)}</div>
+    </div>
+    <div class='analytics-grid section'>
+      <div class='card chart-card'><div class='chart-title'><div><div class='eyebrow'>CUSTOMERS</div><h3>Top Customers by Invoice Value</h3></div></div>{hbars(top_cust)}</div>
+      <div class='card chart-card'><div class='chart-title'><div><div class='eyebrow'>MANAGEMENT VIEW</div><h3>Executive Insights</h3></div></div>
+        <div class='insight-row'><span class='insight-dot'></span><div><b>Profitability</b><p>Profit margin is {float(margin):.1f}% with net profit of {money(profit)}.</p></div></div>
+        <div class='insight-row'><span class='insight-dot'></span><div><b>Collections</b><p>Collection rate is {float(collection):.1f}% and overdue receivables total {money(overdue_value)}.</p></div></div>
+        <div class='insight-row'><span class='insight-dot'></span><div><b>Cost concentration</b><p>{largest}</p></div></div>
+      </div>
+    </div>
+    <div class='card section'><h3>Recent Activity</h3><table><tr><th>Date</th><th>Description</th><th>Category</th><th>Type</th><th>Amount</th></tr>{rows}</table></div>"""
     return page(request,"Dashboard",body)
 
 @app.get("/transactions",response_class=HTMLResponse)
