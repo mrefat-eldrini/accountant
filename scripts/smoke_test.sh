@@ -56,6 +56,27 @@ backup_tests() {
   echo "PASS backup/restore"
 }
 
+remote_tests() {
+  echo "[REMOTE] $BASE_URL"
+  health="$(curl -fsS "$BASE_URL/health")"
+  echo "$health" | grep -q '"status":"ok"'
+  echo "$health" | grep -q '"version":"0.4.0"'
+
+  admin_login
+  curl -fsS -b "$admin_cookies" "$BASE_URL/" -o "$page"
+  grep -q "href='/users'" "$page"
+  grep -q "href='/audit'" "$page"
+  grep -q "href='/backup'" "$page"
+  grep -q "href='/system'" "$page"
+  grep -q "href='/settings'" "$page"
+
+  for path in / /transactions /invoices /expenses /customers /vendors /accounts /journal /reports /users /audit /backup /system /settings; do
+    code="$(curl -sS -o /dev/null -w '%{http_code}' -b "$admin_cookies" "$BASE_URL$path")"
+    test "$code" = "200" || { echo "FAILED remote admin $path -> HTTP $code"; exit 1; }
+  done
+  echo "PASS remote deployed application"
+}
+
 role_tests() {
   echo "[ROLES]"
   admin_login
@@ -89,6 +110,7 @@ case "$PHASE" in
   base) base_tests ;;
   backup) backup_tests ;;
   roles) role_tests ;;
+  remote) remote_tests ;;
   all) base_tests; backup_tests; role_tests ;;
   *) echo "Unknown phase: $PHASE"; exit 2 ;;
 esac

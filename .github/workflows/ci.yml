@@ -55,6 +55,42 @@ jobs:
           BASE_URL: http://127.0.0.1:8000
         run: bash scripts/smoke_test.sh roles
 
+      - name: Wait for staging deployment
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        run: |
+          for i in {1..60}; do
+            if curl -fsS https://accountant-staging.onrender.com/health | grep -q '"version":"0.4.0"'; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Staging did not deploy version 0.4.0 in time"
+          exit 1
+
+      - name: Smoke - deployed staging
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        env:
+          BASE_URL: https://accountant-staging.onrender.com
+        run: bash scripts/smoke_test.sh remote
+
+      - name: Wait for production deployment
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          for i in {1..60}; do
+            if curl -fsS https://accountant-b7hw.onrender.com/health | grep -q '"version":"0.4.0"'; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Production did not deploy version 0.4.0 in time"
+          exit 1
+
+      - name: Smoke - deployed production
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          BASE_URL: https://accountant-b7hw.onrender.com
+        run: bash scripts/smoke_test.sh remote
+
       - name: Print application log on failure
         if: failure()
         run: cat /tmp/accountant.log || true
