@@ -39,20 +39,22 @@ Audit and system logs are intentionally preserved during restore so the restore 
 ### Release Engineering
 - `develop` was synchronized to the current `main` release before v0.4.0 promotion to prevent branch-history drift.
 
-### Verification Plan
-- Python syntax check.
-- Application startup.
-- Admin authenticated navigation checks.
-- Accounting module route checks.
-- Administration route checks.
-- Admin navigation visibility.
-- Backup generation validation.
-- Backup restore validation.
-- Viewer Administration denial.
-- Viewer accounting write denial.
-- Audit trail validation.
-- Staging deployment and log review.
-- Production deployment and post-deployment verification.
+### Verification Results
+- Initial behavioral CI detected a failing role-navigation assertion; the test was corrected because translation text caused a false positive.
+- Corrected feature CI: **PASSED** — GitHub Actions run `36766125265`.
+- Develop local CI after v0.4.0 promotion: **PASSED** — run `36766186886`.
+- Deployed-environment verification PR CI: **PASSED** — run `36766481730`.
+- Final develop CI including actual Render staging verification: **PASSED** — run `36766551199`.
+- Render staging deploy: **LIVE** — `dep-daum8dm7bikc73cunnlg`.
+- Staging commit: `1ff54e54e55a20ef6ee0d5db1fc0d17b18090d1c`.
+- Actual deployed staging smoke test verified:
+  - Health/version endpoint
+  - Admin navigation and all Administration pages
+  - Dashboard and all primary accounting routes
+  - Authenticated access to the deployed Render application
+
+### Production Gate
+Production promotion is allowed only after the release pull request passes CI. After merge, the main-branch workflow waits for Render production to report version 0.4.0 and then executes the authenticated remote smoke test against the real production URL.
 
 ### Known Infrastructure Item
 - The application remains compatible with PostgreSQL via `DATABASE_URL`, but the Render web services are still using the local SQLite fallback until the managed PostgreSQL connection is attached.
