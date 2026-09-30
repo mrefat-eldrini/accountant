@@ -1,34 +1,94 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+PHASE="${1:-all}"
 BASE_URL="${BASE_URL:-http://127.0.0.1:8000}"
 EMAIL="${SMOKE_EMAIL:-admin@accountant.local}"
 PASSWORD="${SMOKE_PASSWORD:-Admin123!}"
 
 tmpdir="$(mktemp -d)"
 trap 'rm -rf "$tmpdir"' EXIT
-cookies="$tmpdir/cookies.txt"
+admin_cookies="$tmpdir/admin.cookies"
+viewer_cookies="$tmpdir/viewer.cookies"
+page="$tmpdir/page.html"
+backup="$tmpdir/backup.json"
 
-echo "Smoke testing: $BASE_URL"
+admin_login() {
+  curl -fsS -c "$admin_cookies" -b "$admin_cookies"     -X POST "$BASE_URL/login"     -H 'Content-Type: application/x-www-form-urlencoded'     --data-urlencode "email=$EMAIL"     --data-urlencode "password=$PASSWORD"     -o /dev/null
+}
 
-health="$(curl -fsS "$BASE_URL/health")"
-echo "$health" | grep -q '"status":"ok"'
+base_tests() {
+  echo "[BASE] $BASE_URL"
+  health="$(curl -fsS "$BASE_URL/health")"
+  echo "$health" | grep -q '"status":"ok"'
+  curl -fsS "$BASE_URL/login" | grep -q "Sign in"
+  status="$(curl -sS -o /dev/null -w '%{http_code}' "$BASE_URL/")"
+  test "$status" = "303" || test "$status" = "307"
+  admin_login
 
-curl -fsS "$BASE_URL/login" | grep -q "Sign in"
+  for path in / /transactions /invoices /expenses /customers /vendors /accounts /journal /reports /users /audit /backup /system /settings; do
+    code="$(curl -sS -o "$page" -w '%{http_code}' -b "$admin_cookies" "$BASE_URL$path")"
+    test "$code" = "200" || { echo "FAILED $path -> HTTP $code"; cat "$page"; exit 1; }
+  done
 
-status="$(curl -sS -o /dev/null -w '%{http_code}' "$BASE_URL/")"
-test "$status" = "303" || test "$status" = "307"
+  curl -fsS -b "$admin_cookies" "$BASE_URL/" -o "$page"
+  grep -q "href='/users'" "$page"
+  grep -q "href='/audit'" "$page"
+  grep -q "href='/backup'" "$page"
+  grep -q "href='/system'" "$page"
+  grep -q "href='/settings'" "$page"
+  echo "PASS base/admin UI"
+}
 
-curl -fsS -c "$cookies" -b "$cookies"   -X POST "$BASE_URL/login"   -H 'Content-Type: application/x-www-form-urlencoded'   --data-urlencode "email=$EMAIL"   --data-urlencode "password=$PASSWORD"   -o /dev/null
+backup_tests() {
+  echo "[BACKUP]"
+  admin_login
+  curl -fsS -b "$admin_cookies" "$BASE_URL/backup/download" -o "$backup"
+  grep -q '"product": "Accountant Pro"' "$backup"
+  grep -q '"users"' "$backup"
+  grep -q '"transactions"' "$backup"
 
-for path in / /transactions /invoices /expenses /customers /vendors /accounts /journal /reports /users; do
-  code="$(curl -sS -o "$tmpdir/page" -w '%{http_code}' -b "$cookies" "$BASE_URL$path")"
-  if [ "$code" != "200" ]; then
-    echo "FAILED $path -> HTTP $code"
-    cat "$tmpdir/page"
-    exit 1
-  fi
-  echo "PASS $path"
-done
+  restore_code="$(curl -sS -o /dev/null -w '%{http_code}' -b "$admin_cookies"     -F "backup_file=@$backup;type=application/json"     -F "confirm=RESTORE"     "$BASE_URL/backup/restore")"
+  test "$restore_code" = "303"
 
-echo "All smoke tests passed."
+  curl -fsS -b "$admin_cookies" "$BASE_URL/audit" -o "$page"
+  grep -q "RESTORE_BACKUP" "$page"
+  echo "PASS backup/restore"
+}
+
+role_tests() {
+  echo "[ROLES]"
+  admin_login
+  viewer_email="viewer-smoke@accountant.local"
+  curl -sS -o /dev/null -b "$admin_cookies"     -X POST "$BASE_URL/users"     -H 'Content-Type: application/x-www-form-urlencoded'     --data-urlencode "name=Viewer Smoke"     --data-urlencode "email=$viewer_email"     --data-urlencode "password=Viewer123!"     --data-urlencode "role=Viewer"
+
+  curl -fsS -c "$viewer_cookies" -b "$viewer_cookies"     -X POST "$BASE_URL/login"     -H 'Content-Type: application/x-www-form-urlencoded'     --data-urlencode "email=$viewer_email"     --data-urlencode "password=Viewer123!"     -o /dev/null
+
+  curl -fsS -b "$viewer_cookies" "$BASE_URL/" -o "$page"
+  for admin_link in "/users" "/audit" "/backup" "/system" "/settings"; do
+    if grep -q "href='$admin_link'" "$page"; then
+      echo "FAILED viewer can see admin navigation link $admin_link"
+      exit 1
+    fi
+  done
+
+  for path in /users /audit /backup /system /settings; do
+    code="$(curl -sS -o /dev/null -w '%{http_code}' -b "$viewer_cookies" "$BASE_URL$path")"
+    test "$code" = "303" || { echo "FAILED viewer restriction $path -> $code"; exit 1; }
+  done
+
+  viewer_post="$(curl -sS -o /dev/null -w '%{http_code}' -b "$viewer_cookies"     -X POST "$BASE_URL/transactions"     -H 'Content-Type: application/x-www-form-urlencoded'     --data-urlencode "txn_date=2026-09-30"     --data-urlencode "description=Viewer must not create"     --data-urlencode "category=Test"     --data-urlencode "txn_type=expense"     --data-urlencode "account_code=5000"     --data-urlencode "amount=1"     --data-urlencode "tax=0")"
+  test "$viewer_post" = "303"
+
+  curl -fsS -b "$admin_cookies" "$BASE_URL/audit" -o "$page"
+  grep -q "CREATE_USER" "$page"
+  echo "PASS role permissions"
+}
+
+case "$PHASE" in
+  base) base_tests ;;
+  backup) backup_tests ;;
+  roles) role_tests ;;
+  all) base_tests; backup_tests; role_tests ;;
+  *) echo "Unknown phase: $PHASE"; exit 2 ;;
+esac

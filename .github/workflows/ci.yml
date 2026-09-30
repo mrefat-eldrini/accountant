@@ -40,10 +40,20 @@ jobs:
           cat /tmp/accountant.log
           exit 1
 
-      - name: Run smoke tests
+      - name: Smoke - base and admin UI
         env:
           BASE_URL: http://127.0.0.1:8000
-        run: bash scripts/smoke_test.sh
+        run: bash scripts/smoke_test.sh base
+
+      - name: Smoke - backup and restore
+        env:
+          BASE_URL: http://127.0.0.1:8000
+        run: bash scripts/smoke_test.sh backup
+
+      - name: Smoke - role permissions
+        env:
+          BASE_URL: http://127.0.0.1:8000
+        run: bash scripts/smoke_test.sh roles
 
       - name: Print application log on failure
         if: failure()
