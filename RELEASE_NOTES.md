@@ -1,5 +1,41 @@
 # Release Notes
 
+## v0.5.0 — 2026-09-30
+
+### Added
+- Executive Business Summary on the main dashboard.
+- 6-month Revenue vs Expenses chart.
+- 6-month Net Profit trend.
+- Invoice collection analysis with collection rate, invoiced, collected, outstanding, and overdue value.
+- Top Expense Categories analysis.
+- Top Customers by Invoice Value analysis.
+- Executive Insights section for profitability, collections, and cost concentration.
+- Executive KPI cards for revenue, expenses, net profit, receivables, payables, and collection rate.
+- Arabic translations for the new executive analytics labels.
+- Dark and Light theme compatibility for all new analytics components.
+
+### Executive Purpose
+The dashboard is designed for business owners, General Managers, CFOs, and executives who need a concise view of overall business performance without reading detailed accounting tables.
+
+The executive view answers:
+1. Are we making money?
+2. Are revenue and expenses moving in the right direction?
+3. Are customers paying us?
+4. Where is the business spending money?
+5. Which customers represent the highest invoice value?
+
+### Testing
+- Application version updated to `0.5.0`.
+- Smoke tests verify all executive analytics sections are rendered.
+- Existing accounting, role, administration, backup/restore, and audit tests remain in the release gate.
+
+### PostgreSQL Status
+- The application already supports PostgreSQL through the `DATABASE_URL` environment variable.
+- The managed Render PostgreSQL instance `accountant-db` exists and is available.
+- The Render connector exposes the database name/user but does not expose its generated password/Internal Database URL and does not currently provide a database-to-service secret-link action.
+- For that reason, the service cannot be safely switched from SQLite to PostgreSQL programmatically without the Render Internal Database URL.
+- No database credential has been guessed or embedded in source code.
+
 ## v0.4.0 — 2026-09-30
 
 ### Added
