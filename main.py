@@ -11,6 +11,7 @@ import csv
 DB_URL=os.getenv("DATABASE_URL","sqlite:///./accountant.db")
 if DB_URL.startswith("postgresql://"): DB_URL=DB_URL.replace("postgresql://","postgresql+psycopg://",1)
 engine=create_engine(DB_URL,pool_pre_ping=True)
+APP_VERSION="0.4.0"
 app=FastAPI(title="Accountant Pro")
 app.add_middleware(SessionMiddleware,secret_key=os.getenv("SESSION_SECRET","accountant-demo-secret-change-me"),same_site="lax",https_only=False)
 
@@ -326,7 +327,7 @@ def logout(request:Request):
     request.session.clear(); return RedirectResponse("/login",303)
 
 @app.get("/health")
-def health(): return {"status":"ok","database":"postgresql" if is_pg() else "sqlite"}
+def health(): return {"status":"ok","version":APP_VERSION,"database":"postgresql" if is_pg() else "sqlite"}
 
 @app.get("/",response_class=HTMLResponse)
 def dashboard(request:Request):
