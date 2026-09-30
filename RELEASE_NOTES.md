@@ -28,6 +28,10 @@ The old database columns are retained internally for migration compatibility, bu
 - Feature CI: **PASSED** — GitHub Actions run `36769788258`.
 - Staging deploy: **LIVE** — `dep-daumlrfpn0mc7389m6lg`.
 - Deployed staging authenticated smoke test: **PASSED** — GitHub Actions run `36769860713`.
+- Release PR CI: **PASSED** — GitHub Actions run `36770074207`.
+- Production release commit: `f2e27a3fbeb83f688b525f599af45aac9b283b7b`.
+- Render production deploy: **LIVE** — `dep-daummtojo6nc73dpgp30`.
+- Authenticated production smoke test: **PASSED** — GitHub Actions run `36770138460`.
 - Local username login.
 - Profile page availability.
 - First/last name display.
