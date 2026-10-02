@@ -62,7 +62,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         run: |
           for i in {1..60}; do
-            if curl -fsS https://accountant-staging.onrender.com/health | grep -q '"version":"0.7.0"'; then
+            if curl -fsS https://accountant-sales-preview.onrender.com/health | grep -q '"version":"0.7.0"'; then
               exit 0
             fi
             sleep 5
@@ -73,7 +73,7 @@ jobs:
       - name: Smoke - deployed staging
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         env:
-          BASE_URL: https://accountant-staging.onrender.com
+          BASE_URL: https://accountant-sales-preview.onrender.com
         run: bash scripts/smoke_test.sh remote
 
       - name: Wait for production deployment
