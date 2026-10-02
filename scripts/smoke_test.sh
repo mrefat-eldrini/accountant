@@ -26,7 +26,7 @@ base_tests() {
   test "$status" = "303" || test "$status" = "307"
   admin_login
 
-  for path in / /transactions /invoices /expenses /customers /vendors /accounts /journal /reports /profile /users /audit /backup /system /settings; do
+  for path in / /sales /sales/new /sales/reports /sales/statements /transactions /invoices /expenses /customers /vendors /accounts /journal /reports /profile /users /audit /backup /system /settings; do
     code="$(curl -sS -o "$page" -w '%{http_code}' -b "$admin_cookies" "$BASE_URL$path")"
     test "$code" = "200" || { echo "FAILED $path -> HTTP $code"; cat "$page"; exit 1; }
   done
@@ -42,6 +42,7 @@ base_tests() {
   grep -q "My Profile" "$page"
   grep -q "System" "$page"
   grep -q "Admin" "$page"
+  curl -fsS -b "$admin_cookies" "$BASE_URL/" -o "$page"
   grep -q "Executive Business Summary" "$page"
   grep -q "Revenue vs Expenses" "$page"
   grep -q "Net Profit Trend" "$page"
@@ -72,7 +73,7 @@ remote_tests() {
   echo "[REMOTE] $BASE_URL"
   health="$(curl -fsS "$BASE_URL/health")"
   echo "$health" | grep -q '"status":"ok"'
-  echo "$health" | grep -q '"version":"0.6.0"'
+  echo "$health" | grep -q '"version":"0.7.0"'
 
   admin_login
   curl -fsS -b "$admin_cookies" "$BASE_URL/" -o "$page"
@@ -82,7 +83,7 @@ remote_tests() {
   grep -q "href='/system'" "$page"
   grep -q "href='/settings'" "$page"
 
-  for path in / /transactions /invoices /expenses /customers /vendors /accounts /journal /reports /users /audit /backup /system /settings; do
+  for path in / /sales /sales/new /sales/reports /sales/statements /transactions /invoices /expenses /customers /vendors /accounts /journal /reports /users /audit /backup /system /settings; do
     code="$(curl -sS -o /dev/null -w '%{http_code}' -b "$admin_cookies" "$BASE_URL$path")"
     test "$code" = "200" || { echo "FAILED remote admin $path -> HTTP $code"; exit 1; }
   done
