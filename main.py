@@ -261,6 +261,8 @@ button:hover,.btn:hover{{transform:translateY(-1px);filter:brightness(1.04)}}
 .login input{{width:100%;margin:7px 0}}.login button{{width:100%;margin-top:10px}}
 .login hr{{border:0;border-top:1px solid #26303d;margin:22px 0}}
 .ltr{{direction:ltr;unicode-bidi:isolate}}
+.mobile-sales{{display:none}}
+@media(max-width:780px){{.mobile-sales{{display:flex;padding:8px 14px;overflow:auto;gap:14px;border-bottom:1px solid var(--line)}}.mobile-sales a{{white-space:nowrap;color:var(--gold);text-decoration:none}}}}
 .hero-strip{{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:16px;margin-bottom:18px}}
 .hero-copy{{min-height:205px;padding:26px;display:flex;flex-direction:column;justify-content:center}}
 .eyebrow{{color:var(--gold);font-size:11px;letter-spacing:2.2px;font-weight:800;text-transform:uppercase;margin-bottom:13px}}
