@@ -1,5 +1,36 @@
 # Release Notes
 
+## v0.7.0 — Sales Workspace
+
+Inspired by the supplied Arabic accounting workflow video.
+
+### Added
+- Sales workspace with searchable quotations, cash sales, credit sales, and returns.
+- Itemized documents with quantity, unit price, discount, tax, and server-calculated totals.
+- Quote-to-invoice conversion with duplicate-conversion protection.
+- Payment collection and partial returns with remaining-quantity checks.
+- Pending refunds require explicit confirmation after payment.
+- Customer statements, date-filtered sales reports, CSV export, and print/save-to-PDF.
+- Arabic/English, dark/light themes, and mobile sales navigation.
+- Sales records included in full backups.
+
+### Fixed
+- Restore preserves original record IDs so linked documents remain connected.
+- PostgreSQL sequences reset after restoration.
+- Restore logs use the current username model.
+- Corrected the existing analytics smoke check to inspect the dashboard.
+
+### Verification
+- 12 automated sales tests passed locally.
+- Existing admin, backup/restore, and permissions smoke tests passed.
+- Deployed verification recorded in the release pull request.
+
+### Scope
+- This release provides an accounting demonstration, not Saudi e-invoicing certification or integration.
+- Inventory quantities and cost-of-goods accounting are outside this release.
+- The existing Render service currently uses SQLite; this release does not migrate its database.
+
+
 ## v0.6.0 — Local User Profiles
 
 ### Added
@@ -25,6 +56,13 @@
 The old database columns are retained internally for migration compatibility, but email is no longer part of the user-facing account model or authentication flow. Existing `admin@accountant.local` and `accountant@accountant.local` records are migrated to usernames `admin` and `accountant`.
 
 ### Verification
+- Feature CI: **PASSED** — GitHub Actions run `36769788258`.
+- Staging deploy: **LIVE** — `dep-daumlrfpn0mc7389m6lg`.
+- Deployed staging authenticated smoke test: **PASSED** — GitHub Actions run `36769860713`.
+- Release PR CI: **PASSED** — GitHub Actions run `36770074207`.
+- Production release commit: `f2e27a3fbeb83f688b525f599af45aac9b283b7b`.
+- Render production deploy: **LIVE** — `dep-daummtojo6nc73dpgp30`.
+- Authenticated production smoke test: **PASSED** — GitHub Actions run `36770138460`.
 - Local username login.
 - Profile page availability.
 - First/last name display.

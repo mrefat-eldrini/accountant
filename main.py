@@ -11,7 +11,7 @@ import csv
 DB_URL=os.getenv("DATABASE_URL","sqlite:///./accountant.db")
 if DB_URL.startswith("postgresql://"): DB_URL=DB_URL.replace("postgresql://","postgresql+psycopg://",1)
 engine=create_engine(DB_URL,pool_pre_ping=True)
-APP_VERSION="0.6.0"
+APP_VERSION="0.7.0"
 app=FastAPI(title="Accountant Pro")
 app.add_middleware(SessionMiddleware,secret_key=os.getenv("SESSION_SECRET","accountant-demo-secret-change-me"),same_site="lax",https_only=False)
 
@@ -133,6 +133,8 @@ def setting(key,default=""):
 @app.on_event("startup")
 def startup():
     init_db()
+    from sales import init_sales
+    init_sales(engine,is_pg())
     syslog("INFO","APPLICATION_START","Accountant Pro application started.")
 
 def user(request): return request.session.get("user")
@@ -148,7 +150,7 @@ def editor_guard(request):
     if user(request)["role"] not in ("Admin","Accountant"): return RedirectResponse("/",303)
 def nav(role):
     links=[
-      ("⌂","Dashboard","/"),("↔","Transactions","/transactions"),("▤","Invoices","/invoices"),
+      ("⌂","Dashboard","/"),("◈","Sales Workspace","/sales"),("↔","Transactions","/transactions"),("▤","Invoices","/invoices"),
       ("◫","Expenses","/expenses"),("◎","Customers","/customers"),("◇","Vendors","/vendors"),
       ("▦","Chart of Accounts","/accounts"),("⇄","Journal","/journal"),("▥","Reports","/reports")
     ]
@@ -322,9 +324,11 @@ html[data-theme="light"] .reset-btn{{background:#fff;color:#9b6400;border-color:
 @media(max-width:780px){{header{{height:auto;min-height:68px;padding:12px 14px}}.brand{{font-size:20px}}.layout{{grid-template-columns:1fr}}aside{{display:none}}.grid{{grid-template-columns:1fr}}form.gridform{{grid-template-columns:1fr}}main{{padding:15px}}.card{{padding:14px}}.head-actions{{font-size:12px}}.user-pill span{{display:none}}.top h1{{font-size:28px}}.hero-title{{font-size:31px}}.hero-copy{{padding:20px}}.hero-panel{{grid-template-columns:1fr 1fr}}}}
 </style></head><body>
 <header><a class='brand' href='/'><span class='brand-mark'>A</span><span>Accountant <em>Pro</em></span></a><div class='head-actions'><button class='theme-switch' type='button' onclick='toggleTheme()'>☀ Light</button><button class='lang-switch' type='button' onclick='toggleLanguage()'>العربية</button>{f"<a class='user-pill' href='/profile' style='text-decoration:none'><span class='avatar'>◌</span><span>{u['name']}</span></a><a class='logout-link' href='/logout'>Logout</a>" if u else ''}</div></header>
-{f"<div class='layout'><aside>{nav(role)}</aside><main><div class='top'><h1>{title}</h1></div>{body}</main></div>" if u else f"<main>{body}</main>"}
+{f"<nav class='mobile-sales'><a href='/'>Dashboard</a><a href='/sales'>Sales Workspace</a><a href='/sales/reports'>Sales reports</a><a href='/profile'>My Profile</a></nav><div class='layout'><aside>{nav(role)}</aside><main><div class='top'><h1>{title}</h1></div>{body}</main></div>" if u else f"<main>{body}</main>"}
 <script>
 const AR = {{
+"Refund pending":"مبلغ مسترد قيد الدفع","Confirm refund paid":"تأكيد دفع المبلغ المسترد",
+"Sales Workspace":"مركز المبيعات","Quotations":"عروض الأسعار","Quotation":"عرض سعر","Sales Invoice":"فاتورة مبيعات","Credit Note":"مرتجع مبيعات","Cash sale":"مبيعات نقدية","Credit sale":"مبيعات آجلة","Sales reports":"تقارير المبيعات","Customer statements":"كشف حساب العملاء","New document":"مستند جديد","Item code":"رمز الصنف","Item description":"بيان الصنف","Quantity":"الكمية","Unit price":"سعر الوحدة","Discount %":"الخصم %","Tax %":"الضريبة %","Add line":"إضافة صنف","Remove":"حذف","Save document":"حفظ المستند","Convert to invoice":"تحويل إلى فاتورة","Record payment":"تسجيل دفعة","Sales return":"مرتجع مبيعات","Print / Save PDF":"طباعة / حفظ PDF","Payment terms":"طريقة الدفع","Payment amount":"المبلغ المدفوع","Document":"المستند","Document date":"تاريخ المستند","Due date":"تاريخ الاستحقاق","All documents":"كل المستندات","Returned":"مرتجع","Refund":"المبلغ المسترد","Return quantities":"كميات المرتجع","Save return":"حفظ المرتجع","View":"عرض","Search":"بحث","From":"من","To":"إلى","Apply filters":"تطبيق الفلتر","Export CSV":"تصدير CSV","Net sales":"صافي المبيعات","Sales returns":"مرتجعات المبيعات","Sales before tax":"المبيعات قبل الضريبة","Receivables":"مستحقات العملاء","Discount":"الخصم","Items":"الأصناف","Unit":"الوحدة","Reason":"السبب","Return reason":"سبب الإرجاع","New quotation":"عرض سعر جديد","New cash sale":"فاتورة نقدية جديدة","New credit sale":"فاتورة آجلة جديدة","Statements":"كشوف الحساب","Sales overview":"نظرة عامة على المبيعات","No documents yet":"لا توجد مستندات بعد","No results":"لا توجد نتائج","Select customer":"اختر العميل","Customer balance":"رصيد العميل","Received":"المقبوض","Payments":"الدفعات","Original invoice":"الفاتورة الأصلية","Linked invoice":"الفاتورة المرتبطة","Converted":"تم التحويل","Saved":"تم الحفظ","Create a quotation or itemized invoice to get started.":"ابدأ بإنشاء عرض سعر أو فاتورة مفصلة.","Quotation to invoice, payment to return — one connected workflow.":"من عرض السعر إلى الفاتورة والتحصيل والمرتجع في مسار واحد.","No customer selected":"لم يتم اختيار عميل","Sales documents only":"مستندات المبيعات فقط","All customer invoices":"جميع فواتير العميل","Net amount after returns":"القيمة بعد المرتجعات","Remaining quantity":"الكمية المتاحة للإرجاع",
 "Accountant Pro":"المحاسب برو","Dashboard":"لوحة التحكم","Transactions":"المعاملات","Invoices":"الفواتير","Expenses":"المصروفات","Customers":"العملاء","Vendors":"الموردون","Chart of Accounts":"دليل الحسابات","Journal":"القيود اليومية","Journal Entries":"القيود اليومية","Reports":"التقارير","Users":"المستخدمون","Users & Roles":"المستخدمون والصلاحيات","Logout":"تسجيل الخروج",
 "Login":"تسجيل الدخول","Sign in":"تسجيل الدخول","Use one of the demo accounts below.":"استخدم أحد الحسابات التجريبية أدناه.","Use your local username and password.":"استخدم اسم المستخدم المحلي وكلمة المرور.","Username":"اسم المستخدم","First name":"الاسم الأول","Last name":"اسم العائلة","My Profile":"ملفي الشخصي","Profile":"الملف الشخصي","Password":"كلمة المرور","Admin:":"المدير:","Accountant:":"المحاسب:",
 "Revenue":"الإيرادات","Expenses":"المصروفات","Net profit":"صافي الربح","VAT tracked":"ضريبة القيمة المضافة","Accounts receivable":"الذمم المدينة","Accounts payable":"الذمم الدائنة","Overdue invoices":"الفواتير المتأخرة","Database":"قاعدة البيانات","SQLite Demo":"SQLite تجريبي","Recent activity":"النشاط الأخير",
@@ -769,7 +773,7 @@ def reset_user_password(request:Request,user_id:int):
     return RedirectResponse("/users",303)
 
 
-BACKUP_TABLES=["users","accounts","customers","vendors","transactions","invoices","expenses","journal_entries","settings"]
+BACKUP_TABLES=["users","accounts","customers","vendors","transactions","invoices","expenses","journal_entries","settings","sales_documents","sales_payments"]
 
 @app.get("/audit",response_class=HTMLResponse)
 def audit_page(request:Request):
@@ -797,7 +801,7 @@ def backup_page(request:Request):
 def backup_download(request:Request):
     g=admin_guard(request)
     if g:return g
-    data={"meta":{"product":"Accountant Pro","version":"0.4.0","created_at":datetime.utcnow().isoformat(timespec="seconds"),"database":"postgresql" if is_pg() else "sqlite"},"tables":{}}
+    data={"meta":{"product":"Accountant Pro","version":APP_VERSION,"created_at":datetime.utcnow().isoformat(timespec="seconds"),"database":"postgresql" if is_pg() else "sqlite"},"tables":{}}
     for table in BACKUP_TABLES:
         data["tables"][table]=[dict(r) for r in q(f"SELECT * FROM {table} ORDER BY id")]
         for row in data["tables"][table]:
@@ -821,6 +825,9 @@ async def backup_restore(request:Request,backup_file:UploadFile=File(...),confir
         if data.get("meta",{}).get("product")!="Accountant Pro" or "tables" not in data:
             raise ValueError("Invalid Accountant Pro backup.")
         tables=data["tables"]
+        # Older backups predate sales documents; preserve their restore support.
+        for table in ("sales_documents","sales_payments"):
+            tables.setdefault(table,[])
         for table in BACKUP_TABLES:
             if table not in tables: raise ValueError(f"Missing table: {table}")
         with engine.begin() as conn:
@@ -828,13 +835,15 @@ async def backup_restore(request:Request,backup_file:UploadFile=File(...),confir
                 conn.execute(text(f"DELETE FROM {table}"))
             for table in BACKUP_TABLES:
                 for row in tables[table]:
-                    clean={k:v for k,v in row.items() if k!="id"}
+                    clean=dict(row)
                     if not clean: continue
                     cols=",".join(clean.keys())
                     vals=",".join(":"+k for k in clean.keys())
                     conn.execute(text(f"INSERT INTO {table} ({cols}) VALUES ({vals})"),clean)
+                if is_pg():
+                    conn.execute(text(f"SELECT setval(pg_get_serial_sequence('{table}', 'id'), COALESCE(MAX(id),1), COUNT(*)>0) FROM {table}"))
         audit(request,"RESTORE_BACKUP","Administration",backup_file.filename or "uploaded-backup","Restore completed successfully.")
-        syslog("WARNING","DATABASE_RESTORE",f"Backup restored by {user(request)['email']}.")
+        syslog("WARNING","DATABASE_RESTORE",f"Backup restored by {user(request)['username']}.")
         request.session["flash"]="Backup restored successfully."
     except Exception as e:
         syslog("ERROR","DATABASE_RESTORE_FAILED",str(e))
@@ -898,3 +907,6 @@ def export_csv(request:Request,kind:str):
     if rows:
         w=csv.DictWriter(out,fieldnames=list(rows[0].keys())); w.writeheader(); w.writerows([dict(r) for r in rows])
     return StreamingResponse(iter([out.getvalue()]),media_type="text/csv",headers={"Content-Disposition":f"attachment; filename={kind}.csv"})
+
+from sales import register_sales
+register_sales(app, globals())
